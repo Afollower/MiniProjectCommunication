@@ -1,150 +1,75 @@
 {% extends 'base.html' %}
-{% block title %}创建项目{% endblock %}
+{% block title %}项目成员分组设定{% endblock %}
 {% block content %}
 <div class="main-content">
     <section class="section">
-        <div class="row">
-            <div class="col-lg-7 col-md-12 col-12 col-sm-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="float-right">
-                            <a href="#" class="btn btn-primary">View All</a>
-                        </div>
-                        <h4>待处理问题</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Author</th>
-                                    <th>Action</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <!-- 样例 -->
-                                <tr>
-                                    <td>
-                                        Laravel 5 Tutorial - Installation
-                                        <div class="table-links">
-                                            in <a href="#">Web Development</a>
-                                            <div class="bullet"></div>
-                                            <a href="#">View</a>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="#"> Bagus Dwi Cahya</a>
-                                    </td>
-                                    <td>
-                                        <a class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
-                                           title="Edit"><i
-                                                class="ion ion-edit"></i></a>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-5 col-md-12 col-12 col-sm-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="float-right">
-                            <a href="#" class="btn btn-primary">View All</a>
-                        </div>
-                        <div class="float-right">
-                            <a href="#" class="btn btn-primary">add</a>
-                        </div>
-                        <h4>我的问题</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Action</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <!-- 样例 -->
-                                <tr>
-                                    <td>
-                                        Laravel 5 Tutorial - Installation
-                                        <div class="table-links">
-                                            in <a href="#">Web Development</a>
-                                            <div class="bullet"></div>
-                                            <a href="#">View</a>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
-                                           title="Edit"><i
-                                                class="ion ion-edit"></i></a>
-                                        <a class="btn btn-danger btn-action" data-toggle="tooltip"
-                                           title="Delete"><i
-                                                class="ion ion-trash-b"></i></a>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <form method="post" action="/project/member_category/">
+            {%csrf_token%}
         <div class="row">
             <div class="col-lg-12 col-md-12 col-12 col-sm-12">
                 <div class="card">
                     <div class="card-header">
-                        <div class="float-right">
-                            <a href="#" class="btn btn-primary">View All</a>
-                        </div>
-                        <h4>所有记录</h4>
+                        <h4>项目成员分组信息</h4>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Author</th>
-                                    <th>Action</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <!-- 样例 -->
-                                <tr>
-                                    <td>
-                                        Laravel 5 Tutorial - Installation
-                                        <div class="table-links">
-                                            in <a href="#">Web Development</a>
-                                            <div class="bullet"></div>
-                                            <a href="#">View</a>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="#"> Bagus Dwi Cahya</a>
-                                    </td>
-                                    <td>
-                                        <a class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
-                                           title="Edit"><i
-                                                class="ion ion-edit"></i></a>
-                                        <a class="btn btn-danger btn-action" data-toggle="tooltip"
-                                           title="Delete"><i
-                                                class="ion ion-trash-b"></i></a>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
+                        <div class="form-divider">
+                            <div class="float-right">
+                                <span onclick="javascript:del_pgc_Node('pg_category_sum','add_input')"
+                                      class="btn btn-primary btn-sm">del</span>
+                                <span onclick="javascript:add_pgc_Node('pg_category_sum','add_input')"
+                                      class="btn btn-primary btn-sm">add</span>
+                                <input name="pg_category_sum" id="pg_category_sum"
+                                value="2" style="display:none">
+                            </div>
+                            项目问题级别设定
                         </div>
+                        <div class="row" id="add_input">
+                            {% for pgc in project_member_category %}
+                            {% if pgc.pg_category_id == '1' %}
+                            <div class="form-group col-2" id="pg_category_id1">
+                                <label>类别[ 1 ]</label>
+                                <input name="pg_category_id1" type="text" class="form-control"
+                                       value = "1"  readonly="true" autofocus>
+                            </div>
+                            <div class="form-group col-4" id="pg_category_name1">
+                                <label>名称</label>
+                                <input name="pg_category_name1" type="text" class="form-control"
+                                      value="项目管理员" readonly="true" autofocus>
+                            </div>
+                            <div class="form-group col-6" id="pg_category_describe1">
+                                <label>描述</label>
+                                <input name="pg_category_describe1" type="text" class="form-control"
+                                      value="项目管理者。" readonly="true" autofocus>
+                            </div>
+                            {% else %}
+                            <div class="form-group col-2" id="pg_category_id{{pgc.pg_category_id}}">
+                                <label>类别[ {{pgc.pg_category_id}} ]</label>
+                                <input name="pg_category_id{{pgc.pg_category_id}}" type="text" class="form-control"
+                                       value = "{{pgc.pg_category_id}}"  readonly="true" autofocus>
+                            </div>
+                            <div class="form-group col-4" id="pg_category_name{{pgc.pg_category_id}}">
+                                <label>名称</label>
+                                <input name="pg_category_name{{pgc.pg_category_id}}" type="text" class="form-control"
+                                      value="{{pgc.pg_category_name}}" autofocus>
+                            </div>
+                            <div class="form-group col-6" id="pg_category_describe{{pgc.pg_category_id}}">
+                                <label>描述</label>
+                                <input name="pg_category_describe{{pgc.pg_category_id}}" type="text" class="form-control"
+                                      value="{{pgc.pg_category_describe}}"  autofocus>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            确认
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
+        </form>
     </section>
 </div>
 

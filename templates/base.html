@@ -154,11 +154,9 @@
                             <li><a href="#" class="has-dropdown"><i class="ion ion-ios-circle-outline"></i> 项目设定</a>
                                 <ul class="menu-dropdown">
                                     <!--                                    <li><a href="#"><i class="ion ion-ios-circle-outline"></i> 基础信息</a></li>-->
-                                    <li><a href="/project/schedule"><i class="ion ion-ios-circle-outline"></i> 日程设定</a>
-                                    </li>
-                                    <li><a href="/project/problem_level"><i class="ion ion-ios-circle-outline"></i> 问题设定</a>
-                                    </li>
-
+                                    <li><a href="/project/schedule"><i class="ion ion-ios-circle-outline"></i> 日程设定</a></li>
+                                    <li><a href="/project/problem_level"><i class="ion ion-ios-circle-outline"></i> 问题设定</a></li>
+                                    <li><a href="/project/member_category"><i class="ion ion-ios-circle-outline"></i>分组管理</a></li>
                                 </ul>
                             </li>
                             <li><a href="#" class="has-dropdown"><i class="ion ion-ios-circle-outline"></i>
@@ -167,9 +165,6 @@
                                     <li><a href="/project/member_admin/"><i class="ion ion-ios-circle-outline"></i> 成员管理</a>
                                     </li>
                                     <li><a href="#"><i class="ion ion-ios-circle-outline"></i> 申请管理</a>
-                                    </li>
-                                    <li><a href="/project/member_category"><i class="ion ion-ios-circle-outline"></i>
-                                        分组管理</a>
                                     </li>
                                 </ul>
                             </li>
@@ -330,7 +325,7 @@ function add_pgc_Node(add_sum_id, this_id) {
 }
 
 // 动态删除
-function del_pc_Node(sum_id, this_id, min_sum){
+function del_pgc_Node(sum_id, this_id, min_sum){
     //得到当前div中的div个数，默认的1个无法删除
     var this_length=document.getElementById(this_id).getElementsByTagName('div').length;
     console.log(this_length)

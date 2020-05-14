@@ -25,7 +25,7 @@ class MPC_Project_group_pmd(models.Model):
 # 项目组成员表:
 class MPC_Member_pg_pmd(models.Model):
     pg_id = models.CharField(verbose_name="项目组ID", max_length=32)
-    pg_uc_id = models.CharField(verbose_name="项目组成员分类ID", max_length=32)
+    pg_category_id = models.CharField(verbose_name="项目组成员分类ID", max_length=32)
     # 引用外键 user_admin/User
     user_id = models.CharField(verbose_name="用户ID", max_length=32)
     c_time = models.DateTimeField(auto_now_add=True)

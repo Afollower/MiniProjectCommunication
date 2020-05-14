@@ -9,12 +9,14 @@
                     <div class="card card-primary">
                         <div class="card-header">
                             <div class="float-right">
+                                <span onclick="javascript:del_pgc_Node('pg_category_sum','add_input')"
+                                      class="btn btn-primary btn-sm">del</span>
                                 <span onclick="javascript:add_pgc_Node('pg_category_sum','add_input')"
                                       class="btn btn-primary btn-sm">add</span>
                                 <input name="pg_category_sum" id="pg_category_sum"
-                                value="1" style="display:none">
+                                value="2" style="display:none">
                             </div>
-                            <h4>项目组成员分类管理</h4>
+                            成员分组管理
                         </div>
                         <div class="card-body">
                             <form method="POST" action="/project/member_admin/">

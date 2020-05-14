@@ -36,7 +36,7 @@ def login(request):
                     try:
                         user_state = MPC_User_state_ud.objects.get(user_id=user.user_id)
                         request.session['now_project_id'] = user_state.project_id
-                        request.session['now_project_uc_id'] = user_state.pg_uc_id
+                        request.session['now_project_uc_id'] = user_state.pg_category_id
                         try:
                             pj = MPC_Project_pd.objects.get(project_id=user_state.project_id)
                             request.session['now_project_name'] = pj.project_name
@@ -84,7 +84,7 @@ def login_email(request):
                     try:
                         user_state = MPC_User_state_ud.objects.get(user_id=user.user_id)
                         request.session['now_project_id'] = user_state.project_id
-                        request.session['now_project_uc_id'] = user_state.pg_uc_id
+                        request.session['now_project_uc_id'] = user_state.pg_category_id
                         try:
                             pj = MPC_Project_pd.objects.get(project_id=user_state.project_id)
                             request.session['now_project_name'] = pj.project_name
@@ -114,11 +114,11 @@ def logout(request):
         user_state = MPC_User_state_ud.objects.get(user_id=user_id)
         if now_project_id != '':
             user_state.project_id = now_project_id
-            user_state.pg_uc_id = pg_uc
+            user_state.pg_category_id = pg_uc
             # else:
             #     try:
             #         pg_member = MPC_member_pg_pmd.objects.get(pg_id=now_project_id, user_id=user_id)
-            #         user_state.pg_uc_id = pg_member.pg_uc_id
+            #         user_state.pg_category_id = pg_member.pg_category_id
             #     except:
             #         message = 'MySQLdb error: MPC_member_pg_pmd lose user information'
             user_state.save()
@@ -175,7 +175,7 @@ def register(request):
                 new_user_state = MPC_User_state_ud.objects.create()
                 new_user_state.user_id = user_id
                 new_user_state.project_id = ''
-                new_user_state.pg_uc_id = ''
+                new_user_state.pg_category_id = ''
                 new_user_state.save()
                 return redirect('/user/login/')  # 自动跳转到登录页面
     return render(request, 'login/register.html', locals())

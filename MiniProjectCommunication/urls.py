@@ -25,5 +25,5 @@ urlpatterns = [
     path('index/', include('system_communication_home.urls')),
     # path('communication_statistics/', include('system_communication_statistics.urls')),
     path('project/', include('project_admin.urls')),
-    # path('project_member/', include('project_member_admin.urls')),
+    path('project_member/', include('project_member_admin.urls')),
 ]
