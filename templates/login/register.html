@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" name="viewport">
+  <title>MiniProjectCommunication</title>
+
+  <link rel="stylesheet" href="/static/modules/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/modules/ionicons/css/ionicons.min.css">
+  <link rel="stylesheet" href="/static/modules/fontawesome/web-fonts-with-css/css/fontawesome-all.min.css">
+
+  <link rel="stylesheet" href="/static/css/demo.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+  <div id="app">
+    <section class="section">
+      <div class="container mt-5">
+        <div class="row">
+          <div class="col-12 col-sm-10 offset-sm-1 col-md-8 offset-md-2 col-lg-8 offset-lg-2 col-xl-8 offset-xl-2">
+            <div class="login-brand">
+              注册
+            </div>
+
+            <div class="card card-primary">
+              <div class="card-header"><h4>注册</h4></div>
+
+              <div class="card-body">
+                <form method="POST" action="/user/register/">
+                  {%csrf_token%}
+                  <div class="form-divider">
+                      账户信息
+                  </div>
+                  <div class="row">
+                    <div class="form-group col-6">
+                      <label>用户名</label>
+                      <input name="user_id" type="text" class="form-control" autofocus>
+                    </div>
+                    <div class="form-group col-6">
+                      <label>Email</label>
+                      <input name="user_email" type="email" class="form-control">
+                      <div class="invalid-feedback">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="form-group col-6">
+                      <label class="d-block">密码</label>
+                      <input name="password1" type="password" class="form-control" >
+                    </div>
+                    <div class="form-group col-6">
+                      <label class="d-block">确认密码</label>
+                      <input name="password2" type="password" class="form-control">
+                    </div>
+                  </div>
+
+                  <div class="form-divider">
+                      基础信息
+                  </div>
+                  <div class="row">
+                    <div class="form-group col-6">
+                      <label>姓名</label>
+                      <input name="user_name" type="text" class="form-control">
+                    </div>
+                    <div class="form-group col-6">
+                      <label>性别</label>
+                      <select name="user_sex" class="form-control">
+                        <option value="male">男(male)</option>
+                        <option value="female">女(female)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-group col-6">
+                      <label>所属单位</label>
+                      <input name="user_company" type="text" class="form-control">
+                    </div>
+                    <div class="form-group col-6">
+                      <label>职位</label>
+                      <input name="user_position" type="text" class="form-control">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                      <input type="checkbox" name="agree" class="custom-control-input" id="agree">
+                      <label class="custom-control-label" for="agree">我同意这些条款和条件。</label>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block">
+                      注册
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div class="simple-footer">
+              轻型项目交流管理系统<div class="bullet"></div>
+                by 任成 - email 1838331520@qq.com
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="/static/modules/jquery.min.js"></script>
+  <script src="/static/modules/popper.js"></script>
+  <script src="/static/modules/tooltip.js"></script>
+  <script src="/static/modules/bootstrap/js/bootstrap.min.js"></script>
+  <script src="/static/modules/nicescroll/jquery.nicescroll.min.js"></script>
+  <script src="/static/modules/moment.min.js"></script>
+  <script src="/static/modules/scroll-up-bar/dist/scroll-up-bar.min.js"></script>
+  <script src="/static/js/sa-functions.js"></script>
+  
+  <script src="/static/js/scripts.js"></script>
+  <script src="/static/js/custom.js"></script>
+  <script src="/static/js/demo.js"></script>

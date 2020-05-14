@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block title %} 问题记录 {% endblock %}
+{% block content %}
+<div class="main-content">
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-7 col-md-12 col-12 col-sm-12">
+                <form method="post" action="/index/my_problem/">
+                    {%csrf_token%}
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>详情</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-divider">基础信息</div>
+                            <div class="row">
+                                <div class="form-group col-4">
+                                    <label>问题名称</label>
+                                    <input name="pp_title" type="text" class="form-control"
+                                           value="{{show_problem.pp_title}}">
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>创建者</label>
+                                    <input name="pp_author" type="text" class="form-control"
+                                           value="{{request.session.user_name}}" readonly="true">
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>级别</label>
+                                    <select name="pl_id" class="form-control">
+                                        {% for pl in project_pl %}
+                                        {% if show_problem.pl_id == pl.pl_id %}
+                                        <option value="{{pl.pl_id}}" selected>{{pl.pl_name}}</option>
+                                        {% else %}
+                                        <option value="{{pl.pl_id}}">{{pl.pl_name}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-divider">重现步骤</div>
+                            <div class="row">
+                                <div class="form-group col-12">
+                                <textarea cols=90 rows=6 name="pp_information" style="resize: none;"
+                                          onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
+                                          onkeypress="LimitTextArea(this)">{{show_problem.pp_information}}</textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-4">
+                                    <label>指派给</label>
+                                    <select name="pp_to_user" class="form-control">
+                                        {% for user in pg_member %}
+                                        {% if show_problem.pp_to_user == user.id %}
+                                        <option value="{{user.user_id}}" selected>{{user.user_name}}</option>
+                                        {% else %}
+                                        <option value="{{user.user_id}}">{{user.user_name}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>状态</label>
+                                    <select name="pp_state" class="form-control">
+                                        <option value="{{show_problem.pp_state}}" selected>{{show_problem.pp_state}}</option>
+                                        {% if show_problem.pp_state == '进行中' %}
+                                        <option value="已解决">已解决</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>预计用时</label>
+                                    <input name="pp_time" type="text" class="form-control" value="{{show_problem.pp_time}}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input name="pp_id" value="{{show_problem.pp_id}}" type="hidden">
+                            <button name="todo" value="1" type="submit" class="btn btn-primary btn-block">
+                                确认
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-5 col-md-12 col-12 col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>我的问题</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>问题ID</th>
+                                    <th>标题</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for problem in all_problem %}
+                                <tr>
+                                    <td>{{problem.pp_id}}</td>
+                                    <td>{{problem.pp_title}}</td>
+                                    <td>
+                                        <form method="post" action="/index/my_problem/">
+                                            {%csrf_token%}
+                                            <input name="pp_id" value="{{problem.pp_id}}" type="hidden">
+                                            <button name="todo" value="2" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
+                                                    title="Edit"><i class="ion ion-edit"></i></button>
+                                            <button name="todo" value="3" class="btn btn-danger btn-action" data-toggle="tooltip"
+                                                    title="Delete"><i class="ion ion-trash-b"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %}

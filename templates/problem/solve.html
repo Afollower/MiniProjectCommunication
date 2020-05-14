@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %} 待处理问题 {% endblock %}
+{% block content %}
+<div class="main-content">
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-12 col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>待处理</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>问题ID</th>
+                                    <th>标题</th>
+                                    <th>作者</th>
+                                    <th>问题级别</th>
+                                    <th>预计用时</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for problem in all_problem %}
+                                <tr>
+                                    <td>{{problem.pp_id}}</td>
+                                    <td>{{problem.pp_title}}</td>
+                                    <td>
+                                        {% for user in author %}
+                                        {% if problem.pp_author == user.user_id %}
+                                        {{user.user_name}}
+                                        {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% for pl in pj_level %}
+                                        {% if problem.pl_id == pl.pl_id %}
+                                        {{pl.pl_name}}
+                                        {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>{{problem.pp_time}}</td>
+                                    <td>
+                                        <form method="post" action="/index/problem_solve/">
+                                            {%csrf_token%}
+                                            <input name="pp_id" value="{{problem.pp_id}}" type="hidden">
+                                            <button name="todo" value="2" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
+                                                    title="Edit"><i class="icon ion-search"></i></button>
+                                            <a name="todo" value="3" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
+                                           title="Edit"><i class="ion ion-edit"></i></a>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %}

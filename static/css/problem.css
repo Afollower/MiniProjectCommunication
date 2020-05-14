@@ -1,0 +1,19 @@
+/*# sourceMappingURL=demo.css.map */
+
+.c-pri{
+    border-radius: 50%;
+    height: 20px;
+    width: 20px;
+    display: inline-block;
+    background: #f30303;
+    vertical-align: top;
+}
+
+.label-pri{
+    display: block;
+    color: #FFFFFF;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+}
+

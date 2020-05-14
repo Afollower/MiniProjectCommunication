@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no"
+          name="viewport">
+    <title>MiniProjectCommunication</title>
+
+    <link rel="stylesheet" href="/static/modules/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/modules/ionicons/css/ionicons.min.css">
+    <link rel="stylesheet" href="/static/modules/fontawesome/web-fonts-with-css/css/fontawesome-all.min.css">
+
+    <link rel="stylesheet" href="/static/css/demo.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+<div id="app">
+    <section class="section">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
+                    <div class="login-brand">
+                        登录
+                    </div>
+
+                    <div class="card card-primary">
+                        <div class="card-header"><h4><a href="/user/login">账户登录</a> /
+                            <a href="/user/login2">邮箱登录</a></h4></div>
+
+                        <div class="card-body">
+                            <form method="POST" action="/user/login2/" class="needs-validation" novalidate="">
+                                {%csrf_token%}
+                                <div class="form-group">
+                                    <label for="email">邮箱</label>
+                                    <input id="email" name="email" type="email" class="form-control" tabindex="1"
+                                           required autofocus>
+                                    <div class="invalid-feedback">
+                                        Please fill in your email
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="password" class="d-block">密码
+                                        <div class="float-right">
+                                            <a href="forgot.html">
+                                                忘记密码?
+                                            </a>
+                                        </div>
+                                    </label>
+                                    <input id="password" name="password" type="password" class="form-control"
+                                           tabindex="2" required>
+                                    <div class="invalid-feedback">
+                                        please fill in your password
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" name="agree" class="custom-control-input" id="agree">
+                                        <label class="custom-control-label" for="agree">记住密码</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary btn-block" tabindex="4">
+                                        登录
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="mt-5 text-muted text-center">
+                        没有账户? <a href="/user/register">创建一个新账户</a>
+                    </div>
+                    <div class="simple-footer">
+                        轻型项目交流管理系统
+                        <div class="bullet"></div>
+                        by 任成 - email 1838331520@qq.com
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script src="/static/modules/jquery.min.js"></script>
+<script src="/static/modules/popper.js"></script>
+<script src="/static/modules/tooltip.js"></script>
+<script src="/static/modules/bootstrap/js/bootstrap.min.js"></script>
+<script src="/static/modules/nicescroll/jquery.nicescroll.min.js"></script>
+<script src="/static/modules/moment.min.js"></script>
+<script src="/static/modules/scroll-up-bar/dist/scroll-up-bar.min.js"></script>
+<script src="/static/js/sa-functions.js"></script>
+
+<script src="/static/js/scripts.js"></script>
+<script src="/static/js/custom.js"></script>
+<script src="/static/js/demo.js"></script>
+</body>
+</html>

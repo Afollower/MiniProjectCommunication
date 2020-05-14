@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% block title %}创建项目{% endblock %}
+{% block content %}
+<div class="main-content">
+    <section class="section">
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-12 col-sm-12">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h4>创建项目</h4>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="/project/created/">
+                                {%csrf_token%}
+                                <div class="form-divider">
+                                    基础信息
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6">
+                                        <label>项目名称</label>
+                                        <input name="project_name" type="text" class="form-control"
+                                               autofocus>
+                                        <div class="invalid-feedback">
+                                            请输入项目名称
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <label>负责人</label>
+                                           <input name="project_creator_id" class="form-control"
+                                               value="{{ request.session.user_name }}">
+                                        <div class="invalid-feedback">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6">
+                                        <label class="d-block">项目码</label>
+                                        <input name="project_code1" type="password" class="form-control">
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <label class="d-block">确认项目码</label>
+                                        <input name="project_code2" type="password" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="form-divider">
+                                    <div class="float-right">
+                                        <span onclick="javascript:del_pc_Node('pg_category_sum','add_input')"
+                                              class="btn btn-primary btn-sm">del</span>
+                                        <span onclick="javascript:add_pgc_Node('pg_category_sum','add_input')"
+                                              class="btn btn-primary btn-sm">add</span>
+                                        <input name="pg_category_sum" id="pg_category_sum"
+                                        value="2" style="display:none">
+                                    </div>
+                                    成员分组管理
+<!--                                    <span class="c-pri"><span class="label-pri" >3</span></span>-->
+                                </div>
+                                <div class="row" id="add_input">
+                                    <div class="form-group col-2" id="pg_category_id1">
+                                        <label>类别[ 1 ]</label>
+                                        <input name="pg_category_id1" type="text" class="form-control"
+                                               value = "1"  readonly="true" autofocus>
+                                    </div>
+                                    <div class="form-group col-4" id="pg_category_name1">
+                                        <label>名称</label>
+                                        <input name="pg_category_name1" type="text" class="form-control"
+                                              value="项目管理员" readonly="true" autofocus>
+                                    </div>
+                                    <div class="form-group col-6" id="pg_category_describe1">
+                                        <label>描述</label>
+                                        <input name="pg_category_describe1" type="text" class="form-control"
+                                              value="项目管理者。" readonly="true" autofocus>
+                                    </div>
+                                    <div class="form-group col-2" id="pg_category_id2">
+                                        <label>类别[ 2 ]</label>
+                                        <input name="pg_category_id2" type="text" class="form-control"
+                                               value = "2"  readonly="true" autofocus>
+                                    </div>
+                                    <div class="form-group col-4" id="pg_category_name2">
+                                        <label>名称</label>
+                                        <input name="pg_category_name2" type="text" class="form-control"
+                                              value="项目成员" autofocus>
+                                    </div>
+                                    <div class="form-group col-6" id="pg_category_describe2">
+                                        <label>描述</label>
+                                        <input name="pg_category_describe2" type="text" class="form-control"
+                                              value="项目参与者。"  autofocus>
+                                    </div>
+                                </div>
+
+                                <div class="form-divider">
+                                    <div class="float-right">
+                                        <span onclick="javascript:del_level_Node('pl_sum','add_problem_level')"
+                                              class="btn btn-primary btn-sm">del</span>
+                                        <span onclick="javascript:add_level_Node('pl_sum','add_problem_level')"
+                                              class="btn btn-primary btn-sm">add</span>
+                                        <input name="pl_sum" id="pl_sum"
+                                        value="1" style="display:none">
+                                    </div>
+                                    项目问题级别设定
+                                </div>
+                                <div class="row" id="add_problem_level">
+                                    <div class="form-group col-2" id="pl_id1">
+                                        <label>级别[ 1 ]</label>
+                                        <input name="pl_id1" type="text" class="form-control"
+                                               value = "1"  readonly="true" autofocus>
+                                    </div>
+                                    <div class="form-group col-4" id="pl_name1">
+                                        <label>名称</label>
+                                        <input name="pl_name1" type="text" class="form-control"
+                                              value="紧急" readonly="true" autofocus>
+                                    </div>
+                                    <div class="form-group col-6" id="pl_describe1">
+                                        <label>描述</label>
+                                        <input name="pl_describe1" type="text" class="form-control"
+                                              value="需要第一时间处理的问题，对项目影响很大。" readonly="true" autofocus>
+                                    </div>
+                                </div>
+
+                                <div class="form-divider">
+                                    项目简介
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-12">
+                                        <label>项目简介(请输入200字以内的项目介绍)</label>
+                                        <br>
+                                        <textarea cols=100 rows="10" name="project_td" style="resize: none;"
+                                          onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
+                                          onkeypress="LimitTextArea(this)"></textarea>
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary btn-block">
+                                        创建项目
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+{% endblock %}

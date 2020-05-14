@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block title %}项目信息{% endblock %}
+{% block content %}
+<div class="main-content">
+    <section class="section">
+        <form method="POST" action="/project/information/">
+            {%csrf_token%}
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-12 col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>{{ request.session.now_project_name }}</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-divider">基础信息</div>
+                            <div class="row">
+                                <div class="form-group col-6">
+                                    <label>项目ID</label>
+                                    <input name="project_id" type="text" class="form-control"
+                                           value="{{project.project_id}}" readonly autofocus>
+                                    <div class="invalid-feedback">请输入项目名称</div>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label>项目名称</label>
+                                    <input name="project_name" type="text" class="form-control"
+                                           value="{{project.project_name}}" autofocus>
+                                    <div class="invalid-feedback">请输入项目名称</div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-6">
+                                    <label>负责人</label>
+                                    <input name="project_creator_id" class="form-control"
+                                           value="{{ project_creator.user_name }}">
+                                    <div class="invalid-feedback">
+                                    </div>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label class="d-block">项目码</label>
+                                    <input name="project_code1"
+                                           value="{{project.project_code}}" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if request.session.now_project_uc_id == '1' %}
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-12 col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>项目分组信息</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>项目组名</th>
+                                        <th>描述</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for uc in project_uc %}
+                                    <tr>
+                                        <td>{{uc.pg_category_name}}</td>
+                                        <td>{{uc.pg_category_describe}}</td>
+                                        <td>
+                                            <a class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
+                                               title="Edit"><i
+                                                    class="ion ion-edit"></i></a>
+                                            <a class="btn btn-danger btn-action" data-toggle="tooltip"
+                                               title="Delete"><i
+                                                    class="ion ion-trash-b"></i></a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-12 col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>项目问题级别信息</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>问题级别名称</th>
+                                        <th>问题级别描述</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for pl in project_problem_level %}
+                                    <tr>
+                                        <td>{{pl.pl_name}}</td>
+                                        <td>{{pl.pl_describe}}</td>
+                                        <td>
+                                            <a class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
+                                               title="Edit"><i
+                                                    class="ion ion-edit"></i></a>
+                                            <a class="btn btn-danger btn-action" data-toggle="tooltip"
+                                               title="Delete"><i
+                                                    class="ion ion-trash-b"></i></a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-12 col-sm-12">
+                    <div class="card">
+                         <div class="card-header">
+                            <h4>项目简介</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group col-12">
+                                <br>
+                                <textarea cols=100 rows="10" name="project_td" style="resize: none;"
+                                          onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
+                                          onkeypress="LimitTextArea(this)">{{project.project_td}}</textarea>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+        </form>
+        {% if request.session.now_project_uc_id == '1' %}
+        <div class="btn-group">
+            <a href="/index/" class="btn btn-primary btn-block">  返回  </a>
+            <a href="/project/setting/" class="btn btn-primary btn-block">修改项目设定</a>
+        </div>
+        {% else %}
+        <div class="form-group">
+            <a href="/index/">
+                <button class="btn btn-primary btn-block">返回主页</button>
+            </a>
+        </div>
+        {% endif %}
+    </section>
+</div>
+
+
+{% endblock %}
