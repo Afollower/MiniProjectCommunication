@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}申请管理{% endblock %}
+{% block content %}
+<div class="main-content">
+    <section class="section">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-12 col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>申请管理</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>姓名</th>
+                                        <th>单位</th>
+                                        <th>分组</th>
+                                        <th>操作</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for member in member_information %}
+                                    <td>{{member.user_id}}</td>
+                                    <td>{{member.user_name}}</td>
+                                    <td>{{member.user_company}}</td>
+                                    <td>
+                                        <select name="member_pgc" class="form-control">
+                                        {% for pgc in pg_category %}
+                                        {% if pgc.pg_category_id == '2' %}
+                                            <option value="{{pgc.pg_category_id}}">{{pgc.pg_category_name}}</option>
+                                        {% else %}
+                                            <option value="{{pgc.pg_category_id}}">{{pgc.pg_category_name}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                    <form method="POST" action="/project_member/join_admin/">
+                                        {%csrf_token%}
+                                        <input name="user_id" value="{{member.user_id}}" type="hidden">
+                                        <a name="todo" value="1" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
+                                               title="Pass"><i class="icon ion-checkmark"></i></a>
+                                        <a name="todo" value="2" class="btn btn-danger btn-action" data-toggle="tooltip"
+                                           title="Refuse"><i class="ion ion-trash-b"></i></a>
+                                    </form>
+                                    </td>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+</div>
+
+{% endblock %}

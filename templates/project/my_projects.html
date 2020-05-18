@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}我的项目{% endblock %}
+{% block content %}
+<div class="main-content">
+    <section class="section">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-12 col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>我的项目</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>项目ID</th>
+                                        <th>项目名称</th>
+<!--                                        <th>所处分组</th>-->
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for project in my_projects %}
+                                    <tr>
+                                        <td>{{project.project_id}}</td>
+                                        <td>{{project.project_name}}</td>
+                                        <td>
+                                            <form method="POST" action="/project/my/">
+                                                {%csrf_token%}
+                                                <input name="project_id" value="{{project.project_id}}" type="hidden">
+                                                {% if project.project_id == request.session.now_project_id %}
+                                                <button name="todo" value="1" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
+                                                       title="Pass"><i class="icon ion-android-checkbox"></i></button>
+                                                {% else %}
+                                                <button name="todo" value="1" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
+                                                       title="Pass"><i class="icon ion-android-checkbox-outline"></i></button>
+                                                {% endif %}
+                                                <button name="todo" value="2" class="btn btn-danger btn-action" data-toggle="tooltip"
+                                                   title="Refuse"><i class="ion ion-trash-b"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+</div>
+
+{% endblock %}

@@ -9,6 +9,7 @@ from django.db.models import Max, Min
 # Create your views here.
 
 
+# 系统主页
 def index(request):
     user_id = request.session.get('user_id', None)
     project_id = request.session.get('now_project_id', None)
@@ -156,7 +157,7 @@ def my_problem_list(request):
         return render(request, 'index/index.html', locals())
 
 
-# 待处理问题
+# 待处理问题【未完成，提交修改状态】
 def problem_solve(request):
     if request.session.get('now_project_id', None) != '':
         project_id = request.session.get('now_project_id', None)
@@ -172,7 +173,7 @@ def problem_solve(request):
         return render(request, 'problem/solve.html', {
             "all_problem": all_problem, "author": all_creator_information, "pj_level": pj_level})
     else:
-        message = "请先加入或选择项目，再进行问题提交"
+        message = "请先加入或选择项目，再查看待处理问题。"
         return render(request, 'index/index.html', locals())
 
 
@@ -192,5 +193,5 @@ def problem_resolved(request):
         return render(request, 'problem/resolved.html', {
             "all_problem": all_problem, "author": all_creator_information, "pj_level": pj_level})
     else:
-        message = "请先加入或选择项目，再进行问题提交"
+        message = "请先加入或选择项目，再查看处理问题记录。"
         return render(request, 'index/index.html', locals())

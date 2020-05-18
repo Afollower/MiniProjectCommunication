@@ -43,7 +43,7 @@ class MPC_Member_pg_pmd(models.Model):
 # 组成员分类
 class MPC_Category_pg_pmd(models.Model):
     pg_category_id = models.CharField(verbose_name="项目组成员分类ID", max_length=32)
-    pg_category_name = models.CharField(verbose_name="项目组名", max_length=32)
+    pg_category_name = models.CharField(verbose_name="项目组分类名", max_length=32)
     pg_category_describe = models.CharField(verbose_name="描述", max_length=128)
     # 引用外键 project_member_admin/Project_Group
     pg_id = models.CharField(verbose_name="项目组ID", max_length=32)

@@ -150,7 +150,7 @@ def project_information(request):
 
 
 # 项目日程管理[未完成]
-def add_project_schedule(request):
+def set_project_schedule(request):
     pass
     return render(request, 'project/create.html')
 
@@ -259,4 +259,114 @@ def set_project_group(request):
         message = '修改成功'
         return redirect('/index/')
     return render(request, 'project/member_category.html', {"project_member_category": pg_category})
+
+
+# 加入项目 [待验证]
+def project_join(request):
+    user_id = request.session.get('user_id', None)
+    try:
+        # 加入了部分项目
+        all_pg = MPC_Member_pg_pmd.objects.filter(user_id=user_id)
+        projects = []
+        print("加入了部分项目")
+        for pj in all_pg:
+            print(pj.pg_id)
+            projects.append(pj.pg_id)
+        in_projects = MPC_Project_pd.objects.exclude(project_id__in=projects)
+        max_in_projects = in_projects.aggregate(Max('project_id'))
+        show_pg_id = max_in_projects['project_id__max']
+        print(show_pg_id)
+        if show_pg_id:
+            print("301, 有项目未加入")
+        else:
+            print("加入了所有项目，直接结束")
+            # 加入了所有项目，直接结束
+            message = '你已经加入所有项目！'
+            return render(request, 'index/index.html', locals())
+    except:
+        # 没加入过项目
+        print("没加入项目")
+        in_projects = MPC_Project_pd.objects.all()
+    print("310")
+    creators = []
+    for pj in in_projects:
+        creators.append(pj.project_creator_id)
+    creators_information = MPC_User_ud.objects.filter(user_id__in=creators)
+    show_project = MPC_Project_pd.objects.get(project_id=show_pg_id)
+    show_pg_category = MPC_Category_pg_pmd.objects.filter(pg_id=show_pg_id)
+
+    if request.method == "POST":
+        print("?????????????????????")
+        # 点击右侧项目信息，接收点击的项目ID
+        todo = request.POST['todo']
+        # 加入申请
+        if todo == '1':
+            project_id = request.POST['project_id']
+            project_code = request.POST['project_code']
+            pg_category_id = request.POST['pg_category_id']
+            project = MPC_Project_pd.objects.get(project_id=project_id)
+            # 验证用户是否加入
+            try:
+                check_user = MPC_Member_pg_pmd.objects.get(pg_id=project_id, user_id=user_id)
+                if check_user.pg_category_id != '10' and check_user.pg_category_id != '0':
+                    print("你已经加入项目！")
+                    message = '你已经加入项目！'
+                    return render(request, 'project/join.html', locals())
+                elif check_user.pg_category_id == '0':
+                    print("你已在申请名单！")
+                    message = '你已在申请名单！'
+                    return render(request, 'project/join.html', locals())
+            except:
+                if project_code != project.project_code:
+                    pg_category_id = '0'
+                    message = '申请成功，请联系管理员通过！'
+                else:
+                    message = '加入成功！'
+                new_member = MPC_Member_pg_pmd.objects.create()
+                new_member.pg_id = project_id
+                new_member.pg_category_id = pg_category_id
+                new_member.user_id = user_id
+                new_member.save()
+                return render(request, 'index/index.html', locals())
+        # 切换显示项目
+        show_pg_id = request.POST['project_id']
+        show_pg_category = MPC_Category_pg_pmd.objects.filter(pg_id=show_pg_id)
+        show_project = MPC_Project_pd.objects.get(project_id=show_pg_id)
+    return render(request, 'project/join.html', {
+        "show_project": show_project, "show_pg_category": show_pg_category,
+        "all_project": in_projects, "user_information": creators_information
+    })
+
+
+# 我的项目
+def project_for_me(request):
+    user_id = request.session.get('user_id', None)
+    if request.method == "POST":
+        todo = request.POST['todo']
+        project_id = request.POST['project_id']
+        project = MPC_Project_pd.objects.get(project_id=project_id)
+        pg_information = MPC_Member_pg_pmd.objects.get(pg_id=project_id, user_id=user_id)
+        if todo == '1':
+            # 切换当前项目
+            request.session['now_project_id'] = project_id
+            request.session['now_project_name'] = project.project_name
+            request.session['now_project_uc_id'] = pg_information.pg_category_id
+            return redirect('/project/my/')
+        else:
+            # 退出项目
+            pg_information.pg_category_id = '10'    # 存储在历史记录中
+            pg_information.save()
+            return redirect('/project/my/')
+    else:
+        pg_category = ['1', '2', '3', '4']  # 默认最多4个分类
+        my_pgs = MPC_Member_pg_pmd.objects.filter(user_id=user_id, pg_category_id__in=pg_category)
+        project_ids = []
+        for pj in my_pgs:
+            project_ids.append(pj.pg_id)
+        my_projects = MPC_Project_pd.objects.filter(project_id__in=project_ids)
+        return render(request, 'project/my_projects.html', {
+            "my_projects": my_projects, "my_pgs": my_pgs
+        })
+
+
 

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %} 加入项目 {% endblock %}
+{% block content %}
+<div class="main-content">
+    <section class="section">
+            <div class="row">
+            <div class="col-lg-5 col-md-12 col-12 col-sm-12">
+                <form method="post" action="/project/join/">
+                {%csrf_token%}
+                <div class="card">
+                    <div class="card-header">
+                        <h4>加入项目</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="form-group col-12">
+                                <label>项目ID</label>
+                                <input name="project_id" value="{{show_project.project_id}}"
+                                       type="text" class="form-control">
+                            </div>
+                            <div class="form-group col-12">
+                                <label>项目名称（非必填）</label>
+                                <input name="project_name" value="{{show_project.project_name}}"
+                                       type="text" class="form-control">
+                            </div>
+                            <div class="form-group col-12">
+                                <label>项目邀请码（非必填）</label>
+                                <input name="project_code"
+                                       type="text" class="form-control">
+                            </div>
+                            <div class="form-group col-12">
+                                <label>项目组类别</label>
+                                <select name="pg_category_id" class="form-control">
+                                    {% for pgc in show_pg_category %}
+                                    {% if pgc.pg_category_id != '1' %}
+                                    <option value="{{pgc.pg_category_id}}">{{pgc.pg_category_name}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input name="todo" value="1" type="hidden">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                加入项目
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+            <div class="col-lg-7 col-md-12 col-12 col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>项目列表</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>项目ID</th>
+                                    <th>项目名称</th>
+                                    <th>创建者</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for project in all_project %}
+                                <tr>
+                                    <td>{{project.project_id}}</td>
+                                    <td>{{project.project_name}}</td>
+                                    {% for user in user_information %}
+                                    {% if user.user_id == project.project_creator_id %}
+                                    <td>{{user.user_name}}</td>
+                                    {% endif %}
+                                    {% endfor %}
+                                    <td>
+                                        <form method="post" action="/project/join/">
+                                            {%csrf_token%}
+                                            <input name="todo" value="2" type="hidden">
+                                            <button name="project_id" value="{{project.project_id}}" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
+                                                   title="Join"><i class="icon ion-compose"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </form>
+    </section>
+</div>
+
+{% endblock %}
