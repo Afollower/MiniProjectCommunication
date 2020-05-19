@@ -130,20 +130,27 @@ def project_create(request):
 
 # 项目信息显示[修改未完成]
 def project_information(request):
+    now_project_id = request.session.get('now_project_id', None)
+    now_project_uc_id = request.session.get('now_project_uc_id', None)
     try:
-        now_project_id = request.session.get('now_project_id', None)
-        now_project_uc_id = request.session.get('now_project_uc_id', None)
         now_project = MPC_Project_pd.objects.get(project_id=now_project_id)
-        if now_project_uc_id == '1':
-            project_creator = MPC_User_ud.objects.get(user_id=now_project.project_creator_id)
-            now_project_uc = MPC_Category_pg_pmd.objects.filter(pg_id=now_project_id)
-            now_project_problem_level = MPC_Level_pj_pd.objects.filter(project_id=now_project_id)
-            return render(request, 'project/information.html', {"project": now_project,
-                                                                "project_creator": project_creator,
-                                                                "project_uc": now_project_uc,
-                                                                "project_problem_level": now_project_problem_level})
-        else:
-            return render(request, 'project/information.html', {"project": now_project})
+        # 获取项目负责人信息
+        project_creator = MPC_User_ud.objects.get(user_id=now_project.project_creator_id)
+        # 获取项目基础设定信息
+        now_project_uc = MPC_Category_pg_pmd.objects.filter(pg_id=now_project_id)
+        now_project_problem_level = MPC_Level_pj_pd.objects.filter(project_id=now_project_id)
+        if request.method == "POST":
+            project_name = request.POST['project_name']
+            project_code = request.POST['project_code1']
+            now_project.project_name = project_name
+            now_project.project_code = project_code
+            project_name.save()
+            message = '项目信息修改成功！'
+            return render(request, 'index/index.html', locals())
+        return render(request, 'project/information.html', {"project": now_project,
+                                                            "project_creator": project_creator,
+                                                            "project_uc": now_project_uc,
+                                                            "project_problem_level": now_project_problem_level})
     except:
         message = '请先加入或选择项目组'
         return render(request, 'user/index.html')
@@ -157,146 +164,159 @@ def set_project_schedule(request):
 
 # 设置项目问题等级
 def set_project_pl(request):
-    project_id = request.session.get('now_project_id', None)
-    project_pl = MPC_Level_pj_pd.objects.filter(project_id=project_id)
-    old = 0
-    for i in project_pl:
-        print(i.pl_id)
-        old += 1
-    if request.method == "POST":
-        # 问题级别设定
-        pl_id = []
-        pl_name = []
-        pl_describe = []
-        pl_sum = request.POST['pl_sum']
-        for i in range(1, int(pl_sum) + 1):
-            pl_id.append(request.POST['pl_id' + str(i)])
-            pl_name.append(request.POST['pl_name' + str(i)])
-            pl_describe.append(request.POST['pl_describe' + str(i)])
-            print(pl_id[i - 1], pl_name[i - 1], pl_describe[i - 1])
-        # 更新问题级别信息
-        if old <= int(pl_sum):
-            for i in range(int(pl_sum)):
-                try:
-                    new_pl = MPC_Level_pj_pd.objects.get(pl_id=pl_id[i], project_id=project_id)
-                    new_pl.pl_name = pl_name[i]
-                    new_pl.pl_describe = pl_describe[i]
-                    new_pl.save()
-                except:
-                    new_pl = MPC_Level_pj_pd.objects.create()
-                    new_pl.pl_id = pl_id[i]
-                    new_pl.pl_name = pl_name[i]
-                    new_pl.pl_describe = pl_describe[i]
-                    new_pl.project_id = project_id
-                    new_pl.save()
-        else:
-            # int(pl_sum)
-            for i in range(old):
-                if pl_id[i] <= int(pl_sum):
-                    new_pl = MPC_Level_pj_pd.objects.get(pl_id=pl_id[i], project_id=project_id)
-                    new_pl.pl_name = pl_name[i]
-                    new_pl.pl_describe = pl_describe[i]
-                    new_pl.save()
-                else:
-                    MPC_Level_pj_pd.objects.get(pl_id=str(i+1), project_id=project_id).delete()
-        message = '修改成功'
-        return redirect('/project/information/')
-    return render(request, 'project/problem_level.html', {
-        "project_pl": project_pl
-    })
+    user_category = request.session.get('now_project_uc_id', None)
+    if user_category == '1':
+        project_id = request.session.get('now_project_id', None)
+        project_pl = MPC_Level_pj_pd.objects.filter(project_id=project_id)
+        old = 0
+        for i in project_pl:
+            print(i.pl_id)
+            old += 1
+        if request.method == "POST":
+            # 问题级别设定
+            pl_id = []
+            pl_name = []
+            pl_describe = []
+            pl_sum = request.POST['pl_sum']
+            for i in range(1, int(pl_sum) + 1):
+                pl_id.append(request.POST['pl_id' + str(i)])
+                pl_name.append(request.POST['pl_name' + str(i)])
+                pl_describe.append(request.POST['pl_describe' + str(i)])
+                print(pl_id[i - 1], pl_name[i - 1], pl_describe[i - 1])
+            # 更新问题级别信息
+            if old <= int(pl_sum):
+                for i in range(int(pl_sum)):
+                    try:
+                        new_pl = MPC_Level_pj_pd.objects.get(pl_id=pl_id[i], project_id=project_id)
+                        new_pl.pl_name = pl_name[i]
+                        new_pl.pl_describe = pl_describe[i]
+                        new_pl.save()
+                    except:
+                        new_pl = MPC_Level_pj_pd.objects.create()
+                        new_pl.pl_id = pl_id[i]
+                        new_pl.pl_name = pl_name[i]
+                        new_pl.pl_describe = pl_describe[i]
+                        new_pl.project_id = project_id
+                        new_pl.save()
+            else:
+                # int(pl_sum)
+                for i in range(old):
+                    if i < int(pl_sum):
+                        new_pl = MPC_Level_pj_pd.objects.get(pl_id=pl_id[i], project_id=project_id)
+                        new_pl.pl_name = pl_name[i]
+                        new_pl.pl_describe = pl_describe[i]
+                        new_pl.save()
+                    else:
+                        MPC_Level_pj_pd.objects.get(pl_id=str(i+1), project_id=project_id).delete()
+            message = '修改成功'
+            return redirect('/project/information/')
+        return render(request, 'project/problem_level.html', {
+            "project_pl": project_pl
+        })
+    elif user_category > 1 or user_category <= 4:
+        message = '您的权限不足！'
+        return render(request, 'index/index.htm', locals())
+    else:
+        message = '请先创建项目！'
+        return render(request, 'index/index.htm', locals())
 
 
 # 项目分组信息设定
 def set_project_group(request):
-    project_id = request.session.get('now_project_id', None)
-    pg_category = MPC_Category_pg_pmd.objects.filter(pg_id=project_id)
-    old_pgc = pg_category.aggregate(Max('pg_category_id'))
-    old = int(old_pgc['pg_category_id__max'])
-    print("type:{}, value:{}", type(old), old)
-    if request.method == "POST":
-        # 成员分组信息  :  pg_category_sum -> 判断添加了几个div
-        pgc_id = []
-        pgc_name = []
-        pgc_describe = []
-        pg_category_sum = request.POST['pg_category_sum']
-        for i in range(1, int(pg_category_sum) + 1):
-            pgc_id.append(request.POST['pg_category_id' + str(i)])
-            pgc_name.append(request.POST['pg_category_name' + str(i)])
-            pgc_describe.append(request.POST['pg_category_describe' + str(i)])
-            if pgc_name[i-1] == '' or pgc_describe == '':
-                message = '请检查表单填写情况！'
-                return redirect('/project/member_category/')
-            print(pgc_id[i - 1], pgc_name[i - 1], pgc_describe[i - 1])
-            # 创建项目组成员分类信息
-        if int(pg_category_sum) >= old:
-            for i in range(1, int(pg_category_sum)):
-                print("增加或者不变")
-                try:
-                    new_pgc = MPC_Category_pg_pmd.objects.get(pg_category_id=pgc_id[i], pg_id=project_id)
-                    new_pgc.pg_category_name = pgc_name[i]
-                    new_pgc.pg_category_describe = pgc_describe[i]
-                    new_pgc.save()
-                except:
-                    new_pgc = MPC_Category_pg_pmd.objects.create()
-                    new_pgc.pg_category_id = pgc_id[i]
-                    new_pgc.pg_category_name = pgc_name[i]
-                    new_pgc.pg_category_describe = pgc_describe[i]
-                    new_pgc.pg_id = project_id
-                    new_pgc.save()
-        else:
-            print("减少")
-            for i in range(old):
-                print("old:{}", old)
-                print(int(pg_category_sum))
-                if i < int(pg_category_sum):
-                    new_pgc = MPC_Category_pg_pmd.objects.get(pg_category_id=pgc_id[i], pg_id=project_id)
-                    new_pgc.pg_category_name = pgc_name[i]
-                    new_pgc.pg_category_describe = pgc_describe[i]
-                    new_pgc.save()
-                else:
-                    # 列表中只存储了部分等级信息，需要删除全部等级信息，加之i = 0~old-1  pgc_id 1~odl  有对应关系
-                    MPC_Category_pg_pmd.objects.get(pg_category_id=str(i+1), pg_id=project_id).delete()
-        message = '修改成功'
-        return redirect('/index/')
-    return render(request, 'project/member_category.html', {"project_member_category": pg_category})
+    user_category = request.session.get('now_project_uc_id', None)
+    if user_category == '1':
+        project_id = request.session.get('now_project_id', None)
+        pg_category = MPC_Category_pg_pmd.objects.filter(pg_id=project_id)
+        old_pgc = pg_category.aggregate(Max('pg_category_id'))
+        old = int(old_pgc['pg_category_id__max'])
+        print("type:{}, value:{}", type(old), old)
+        if request.method == "POST":
+            # 成员分组信息  :  pg_category_sum -> 判断添加了几个div
+            pgc_id = []
+            pgc_name = []
+            pgc_describe = []
+            pg_category_sum = request.POST['pg_category_sum']
+            for i in range(1, int(pg_category_sum) + 1):
+                pgc_id.append(request.POST['pg_category_id' + str(i)])
+                pgc_name.append(request.POST['pg_category_name' + str(i)])
+                pgc_describe.append(request.POST['pg_category_describe' + str(i)])
+                if pgc_name[i-1] == '' or pgc_describe == '':
+                    message = '请检查表单填写情况！'
+                    return redirect('/project/member_category/')
+                print(pgc_id[i - 1], pgc_name[i - 1], pgc_describe[i - 1])
+                # 创建项目组成员分类信息
+            if int(pg_category_sum) >= old:
+                for i in range(1, int(pg_category_sum)):
+                    print("增加或者不变")
+                    try:
+                        new_pgc = MPC_Category_pg_pmd.objects.get(pg_category_id=pgc_id[i], pg_id=project_id)
+                        new_pgc.pg_category_name = pgc_name[i]
+                        new_pgc.pg_category_describe = pgc_describe[i]
+                        new_pgc.save()
+                    except:
+                        new_pgc = MPC_Category_pg_pmd.objects.create()
+                        new_pgc.pg_category_id = pgc_id[i]
+                        new_pgc.pg_category_name = pgc_name[i]
+                        new_pgc.pg_category_describe = pgc_describe[i]
+                        new_pgc.pg_id = project_id
+                        new_pgc.save()
+            else:
+                print("减少")
+                for i in range(old):
+                    print("old:{}", old)
+                    print(int(pg_category_sum))
+                    if i < int(pg_category_sum):
+                        new_pgc = MPC_Category_pg_pmd.objects.get(pg_category_id=pgc_id[i], pg_id=project_id)
+                        new_pgc.pg_category_name = pgc_name[i]
+                        new_pgc.pg_category_describe = pgc_describe[i]
+                        new_pgc.save()
+                    else:
+                        # 列表中只存储了部分等级信息，需要删除全部等级信息，加之i = 0~old-1  pgc_id 1~odl  有对应关系
+                        MPC_Category_pg_pmd.objects.get(pg_category_id=str(i+1), pg_id=project_id).delete()
+            message = '修改成功'
+            return redirect('/index/')
+        return render(request, 'project/member_category.html', {"project_member_category": pg_category})
+    elif user_category > 1 or user_category <= 4:
+        message = '您的权限不足！'
+        return render(request, 'index/index.htm', locals())
+    else:
+        message = '请先创建项目！'
+        return render(request, 'index/index.htm', locals())
 
 
 # 加入项目 [待验证]
 def project_join(request):
     user_id = request.session.get('user_id', None)
     try:
-        # 加入了部分项目
+        # 加入了部分项目,其中包括申请，已加入，和退出的
         all_pg = MPC_Member_pg_pmd.objects.filter(user_id=user_id)
         projects = []
         print("加入了部分项目")
         for pj in all_pg:
-            print(pj.pg_id)
             projects.append(pj.pg_id)
         in_projects = MPC_Project_pd.objects.exclude(project_id__in=projects)
         max_in_projects = in_projects.aggregate(Max('project_id'))
         show_pg_id = max_in_projects['project_id__max']
-        print(show_pg_id)
         if show_pg_id:
-            print("301, 有项目未加入")
+            print("project_admin/views.y/project_join: 有项目未加入")
         else:
-            print("加入了所有项目，直接结束")
+            print("project_admin/views.y/project_join: 加入了所有项目，直接结束")
             # 加入了所有项目，直接结束
             message = '你已经加入所有项目！'
             return render(request, 'index/index.html', locals())
     except:
         # 没加入过项目
-        print("没加入项目")
+        print("project_admin/views.y/project_join: 没加入项目")
         in_projects = MPC_Project_pd.objects.all()
-    print("310")
+    # 项目创建者信息
     creators = []
     for pj in in_projects:
         creators.append(pj.project_creator_id)
     creators_information = MPC_User_ud.objects.filter(user_id__in=creators)
+    # 展示项目信息
     show_project = MPC_Project_pd.objects.get(project_id=show_pg_id)
     show_pg_category = MPC_Category_pg_pmd.objects.filter(pg_id=show_pg_id)
-
     if request.method == "POST":
-        print("?????????????????????")
         # 点击右侧项目信息，接收点击的项目ID
         todo = request.POST['todo']
         # 加入申请
@@ -308,18 +328,20 @@ def project_join(request):
             # 验证用户是否加入
             try:
                 check_user = MPC_Member_pg_pmd.objects.get(pg_id=project_id, user_id=user_id)
-                if check_user.pg_category_id != '10' and check_user.pg_category_id != '0':
-                    print("你已经加入项目！")
-                    message = '你已经加入项目！'
+                if check_user.pg_category_id != '10':
+                    print("你已经加入项目，或在申请名单中")
+                    message = '你已经加入了项目，或在申请名单中！'
                     return render(request, 'project/join.html', locals())
-                elif check_user.pg_category_id == '0':
-                    print("你已在申请名单！")
-                    message = '你已在申请名单！'
-                    return render(request, 'project/join.html', locals())
+                else:
+                    # 被删除或者退出后重新加入
+                    check_user.pg_category_id = '0'
+                    check_user.save()
+                    message = '申请成功，请等待管理员通过'
+                    return render(request, 'index/index.html', locals())
             except:
                 if project_code != project.project_code:
                     pg_category_id = '0'
-                    message = '申请成功，请联系管理员通过！'
+                    message = '申请成功，请等待管理员通过！'
                 else:
                     message = '加入成功！'
                 new_member = MPC_Member_pg_pmd.objects.create()
@@ -358,8 +380,14 @@ def project_for_me(request):
             pg_information.save()
             return redirect('/project/my/')
     else:
-        pg_category = ['1', '2', '3', '4']  # 默认最多4个分类
-        my_pgs = MPC_Member_pg_pmd.objects.filter(user_id=user_id, pg_category_id__in=pg_category)
+        # 获取我加入的项目
+        in_pg_category = ['1', '2', '3', '4']  # 默认最多4个分类
+        # 判断是否加入或创建过项目
+        try:
+            my_pgs = MPC_Member_pg_pmd.objects.filter(user_id=user_id, pg_category_id__in=in_pg_category)
+        except:
+            message = '请先加入或创建项目！'
+            return render(request, 'index/index.html', locals())
         project_ids = []
         for pj in my_pgs:
             project_ids.append(pj.pg_id)

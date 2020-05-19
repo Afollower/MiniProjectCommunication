@@ -28,6 +28,8 @@ class MPC_Member_pg_pmd(models.Model):
     pg_category_id = models.CharField(verbose_name="项目组成员分类ID", max_length=32)
     # 引用外键 user_admin/User
     user_id = models.CharField(verbose_name="用户ID", max_length=32)
+    submit_sum = models.IntegerField(verbose_name="提交问题个数", default=0)
+    handle_sum = models.IntegerField(verbose_name="处理问题个数", default=0)
     c_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

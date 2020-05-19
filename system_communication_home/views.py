@@ -31,8 +31,12 @@ def index(request):
 
 # 提出问题
 def problem_proposed(request):
-    if request.session.get('now_project_id', None) != '':
-        project_id = request.session.get('now_project_id')
+    message = ''
+    user_pgc = int(request.session.get('now_project_uc_id', None))
+    # 判断是否加入项目[双重保险]
+    if user_pgc <= 4 or user_pgc >= 1:
+        project_id = request.session.get('now_project_id', None)
+        user_id = request.session.get('user_id', None)
         if request.method == "POST":
             max_pp_id = MPC_problem_sch.objects.filter(project_id=project_id).aggregate(Max('pp_id'))
             # 问题ID ：取最大值+1（第一个问题为 1）
@@ -41,7 +45,7 @@ def problem_proposed(request):
             else:
                 pp_id = '1'
             pp_title = request.POST['pp_title']
-            pp_author = request.session.get('user_id', None)
+            pp_author = user_id
             pp_information = request.POST['pp_information']
             pp_to_user = request.POST['pp_to_user']
             if pp_to_user == '':
@@ -50,7 +54,8 @@ def problem_proposed(request):
                 pp_state = '进行中'
             pp_time = request.POST['pp_time']
             pl_id = request.POST['pl_id']
-            if pp_title and pp_information:
+
+            if pp_title != '' and pp_information != '':
                 new_pp = MPC_problem_sch.objects.create()
                 new_pp.pp_id = pp_id
                 new_pp.pp_title = pp_title
@@ -61,12 +66,14 @@ def problem_proposed(request):
                 new_pp.pp_to_user = pp_to_user
                 new_pp.project_id = project_id
                 new_pp.pl_id = pl_id
-                print(1)
                 new_pp.save()
+                # 当前项目用户提交问题个数+1
+                change_member = MPC_Member_pg_pmd.objects.get(user_id=user_id)
+                change_member.submit_sum += 1
+                change_member.save()
                 return redirect('/index/')
             else:
                 message = '请检查填写是否完整。'
-                return render(request, 'problem/propose.html')
         else:
             try:
                 project_pl = MPC_Level_pj_pd.objects.filter(project_id=project_id)
@@ -78,9 +85,10 @@ def problem_proposed(request):
                 for i in pg_member:
                     members.append(i.user_id)
                 pg_member_information = MPC_User_ud.objects.filter(user_id__in=members)
-                for i in pg_member_information:
-                    print(i.user_name)
-                return render(request, 'problem/propose.html', {"project_pl": project_pl, "pg_member": pg_member_information})
+                return render(request, 'problem/propose.html', {
+                    "project_pl": project_pl, "pg_member": pg_member_information,
+                    "message": message
+                })
             except:
                 message = "请先加入或选择项目，再进行问题提交"
                 return render(request, 'index/index.html', locals())
@@ -91,7 +99,10 @@ def problem_proposed(request):
 
 # 我提出的问题记录
 def my_problem_list(request):
-    if request.session.get('now_project_id', None) != '':
+    message = ''
+    user_pgc = int(request.session.get('now_project_uc_id', None))
+    # 判断是否加入项目[双重保险]
+    if user_pgc <= 4 or user_pgc >= 1:
         user_id = request.session.get('user_id', None)
         project_id = request.session.get('now_project_id', None)
         try:
@@ -106,8 +117,6 @@ def my_problem_list(request):
             if request.method == "POST":
                 todo = request.POST['todo']
                 show_pp_id = request.POST['pp_id']
-                print("show_pp_id:")
-                print(show_pp_id)
                 # 当todo=2 只是查看，下面if直接跳过
                 # 当todo=1 说明存在修改
                 # 当todo=3 删除
@@ -131,24 +140,35 @@ def my_problem_list(request):
                     message = '修改成功！'
                     all_problem = MPC_problem_sch.objects.filter(pp_author=user_id, project_id=project_id)
                 if todo == '3':
-                    MPC_problem_sch.objects.get(pp_id=show_pp_id, project_id=project_id).delete()
-                    all_problem = MPC_problem_sch.objects.filter(pp_author=user_id, project_id=project_id)
-                    max_pp = all_problem.aggregate(Max('pp_id'))
-                    if max_pp['pp_id__max']:
-                        show_pp_id = max_pp['pp_id__max']
+                    del_problem = MPC_problem_sch.objects.get(pp_id=show_pp_id, project_id=project_id).delete()
+                    if del_problem.pp_state == "以解决":
+                        message = '当前问题已被处理，无法删除记录'
                     else:
-                        message = '请先提交问题'
-                        return render(request, 'index/index.html', locals())
+                        # 当前项目用户提交问题个数-1
+                        change_member = MPC_Member_pg_pmd.objects.get(user_id=user_id)
+                        change_member.submit_sum -= 1
+                        change_member.save()
+                        # 删除后显示另一个问题信息
+                        all_problem = MPC_problem_sch.objects.filter(pp_author=user_id, project_id=project_id)
+                        max_pp = all_problem.aggregate(Max('pp_id'))
+                        if max_pp['pp_id__max']:
+                            show_pp_id = max_pp['pp_id__max']
+                        else:
+                            message = '请先提交问题'
+                            return render(request, 'index/index.html', locals())
                 show_problem = MPC_problem_sch.objects.get(pp_id=show_pp_id, project_id=project_id)
                 # 直接return 传数据到前端
                 return render(request, 'problem/propose_list.html', {
                     "project_pl": project_pl, "show_problem": show_problem,
                     "all_problem": all_problem, "pg_member": pg_member_information})
+
             max_problem_id = all_problem.aggregate(Max('pp_id'))
             show_problem = MPC_problem_sch.objects.get(pp_id=str(max_problem_id['pp_id__max']), project_id=project_id)
             return render(request, 'problem/propose_list.html', {
                 "project_pl": project_pl, "show_problem": show_problem,
-                "all_problem": all_problem, "pg_member": pg_member_information })
+                "all_problem": all_problem, "pg_member_information": pg_member_information,
+                "message": message
+            })
         except:
             message = '尚未在该项目提出建议'
             return render(request, 'index/index.html', locals())
@@ -158,8 +178,12 @@ def my_problem_list(request):
 
 
 # 待处理问题【未完成，提交修改状态】
+# 当前进度：05/18 修改警报信息，前三个权限管理当前界面已完成
 def problem_solve(request):
-    if request.session.get('now_project_id', None) != '':
+    message = ''
+    user_pgc = int(request.session.get('now_project_uc_id', None))
+    # 判断是否加入项目[双重保险]
+    if user_pgc <= 4 or user_pgc >= 1:
         project_id = request.session.get('now_project_id', None)
         user_id = request.session.get('user_id', None)
         all_problem = MPC_problem_sch.objects.filter(pp_to_user=user_id, project_id=project_id).exclude(pp_state='已解决')
@@ -179,7 +203,10 @@ def problem_solve(request):
 
 # 已处理问题
 def problem_resolved(request):
-    if request.session.get('now_project_id', None) != '':
+    message = ''
+    user_pgc = int(request.session.get('now_project_uc_id', None))
+    # 判断是否加入项目[双重保险]
+    if user_pgc <= 4 or user_pgc >= 1:
         project_id = request.session.get('now_project_id', None)
         user_id = request.session.get('user_id', None)
         all_problem = MPC_problem_sch.objects.filter(pp_to_user=user_id, project_id=project_id).exclude(pp_state='进行中')
@@ -191,7 +218,9 @@ def problem_resolved(request):
             all_creator.append(i.pp_author)
         all_creator_information = MPC_User_ud.objects.filter(user_id__in=all_creator)
         return render(request, 'problem/resolved.html', {
-            "all_problem": all_problem, "author": all_creator_information, "pj_level": pj_level})
+            "all_problem": all_problem, "author": all_creator_information,
+            "pj_level": pj_level, "message": message
+        })
     else:
         message = "请先加入或选择项目，再查看处理问题记录。"
         return render(request, 'index/index.html', locals())

@@ -2,6 +2,9 @@
 {% block title %} 提出问题 {% endblock %}
 {% block content %}
 <div class="main-content">
+    {% if message != '' %}
+    <div class="alert alert-warning">{{message}}</div>
+    {% endif %}
     <section class="section">
         <form method="post" action="/index/problem_proposed/">
             {%csrf_token%}

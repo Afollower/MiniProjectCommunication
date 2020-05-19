@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}成员管理{% endblock %}
+{% block content %}
+<div class="main-content">
+    <section class="section">
+        <form method="POST" action="/project_member/admin/">
+            {%csrf_token%}
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-12 col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>成员管理</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>用户ID</th>
+                                        <th>姓名</th>
+                                        <th>单位</th>
+                                        <th>当前分组</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for member in member_information %}
+                                    <tr>
+                                    <td>{{member.user_id}}</td>
+                                    <td>{{member.user_name}}</td>
+                                    <td>{{member.user_company}}</td>
+                                    <td>
+                                        <select name="pg_category" >
+                                        {% for pgc in pg_category %}
+                                        {% if pgc.pg_category_id == '2' %}
+                                            <option value="{{pgc.pg_category_id}}">{{pgc.pg_category_name}}</option>
+                                        {% else %}
+                                            <option value="{{pgc.pg_category_id}}">{{pgc.pg_category_name}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input name="member_id" value="{{member.user_id}}" type="hidden">
+                                        <button name="todo" value="1" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
+                                               title="Edit"><i class="icon ion-checkmark"></i></button>
+                                        <button name="todo" value="2" class="btn btn-danger btn-action" data-toggle="tooltip"
+                                           title="del"><i class="ion ion-trash-b"></i></button>
+                                    </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </section>
+</div>
+
+{% endblock %}

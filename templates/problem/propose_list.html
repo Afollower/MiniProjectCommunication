@@ -2,8 +2,13 @@
 {% block title %} 问题记录 {% endblock %}
 {% block content %}
 <div class="main-content">
+    {% if message != '' %}
+    <div class="alert alert-warning">{{message}}</div>
+    {% endif %}
     <section class="section">
+
         <div class="row">
+
             <div class="col-lg-7 col-md-12 col-12 col-sm-12">
                 <form method="post" action="/index/my_problem/">
                     {%csrf_token%}
@@ -49,11 +54,11 @@
                                 <div class="form-group col-4">
                                     <label>指派给</label>
                                     <select name="pp_to_user" class="form-control">
-                                        {% for user in pg_member %}
-                                        {% if show_problem.pp_to_user == user.id %}
-                                        <option value="{{user.user_id}}" selected>{{user.user_name}}</option>
+                                        {% for member in pg_member_information %}
+                                        {% if show_problem.pp_to_user == member.user_id %}
+                                        <option value="{{member.user_id}}" selected>{{member.user_name}}</option>
                                         {% else %}
-                                        <option value="{{user.user_id}}">{{user.user_name}}</option>
+                                        <option value="{{member.user_id}}">{{member.user_name}}</option>
                                         {% endif %}
                                         {% endfor %}
                                     </select>
