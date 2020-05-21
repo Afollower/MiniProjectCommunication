@@ -1,19 +1,50 @@
 {% extends 'base.html' %}
 {% block title %} 待处理问题 {% endblock %}
 {% block content %}
+
+
 <div class="main-content">
     {% if message != '' %}
-    <div class="alert alert-warning">{{message}}</div>
+    <div class="alert alert-warning">{{message.message}}</div>
     {% endif %}
+<!-- 模态框 -->
+    <div class="modal fade" id="myModal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+
+        <!-- 模态框头部 -->
+        <div class="modal-header">
+          <h4 class="modal-title">模态框头部</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+
+        <!-- 模态框主体 -->
+        <div class="modal-body">
+          模态框内容..
+        </div>
+
+        <!-- 模态框底部 -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
     <section class="section">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-12 col-sm-12">
+
                 <div class="card">
                     <div class="card-header">
                         <h4>待处理</h4>
                     </div>
                     <div class="card-body">
+
                         <div class="table-responsive">
+
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
@@ -27,6 +58,7 @@
                                 </thead>
                                 <tbody>
                                 {% for problem in all_problem %}
+
                                 <tr>
                                     <td>{{problem.pp_id}}</td>
                                     <td>{{problem.pp_title}}</td>
@@ -46,14 +78,15 @@
                                     </td>
                                     <td>{{problem.pp_time}}</td>
                                     <td>
-                                        <form method="post" action="/index/problem_solve/">
-                                            {%csrf_token%}
-                                            <input name="pp_id" value="{{problem.pp_id}}" type="hidden">
-                                            <button name="todo" value="2" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
-                                                    title="Edit"><i class="icon ion-search"></i></button>
-                                            <a name="todo" value="3" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
-                                           title="Edit"><i class="ion ion-edit"></i></a>
-                                        </form>
+<!--                                    <form method="post" action="/index/problem_solve/">-->
+<!--                                    {%csrf_token%}-->
+                                        <input name="pp_id" value="{{problem.pp_id}}" type="hidden">
+                                        <button name="todo" value="2" class="btn btn-primary btn-action mr-1" data-toggle="modal" data-target="#myModal"
+                                                title="Edit"><i class="icon ion-search"></i></button>
+                                        <a name="todo" value="3" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
+                                       title="Edit"><i class="ion ion-edit"></i></a>
+                                        <!-- 按钮触发模态框 -->
+<!--                                    </form>-->
                                     </td>
                                 </tr>
                                 {% endfor %}

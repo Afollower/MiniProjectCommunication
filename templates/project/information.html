@@ -124,8 +124,12 @@
             {% endif %}
             {% if request.session.now_project_uc_id == '1' %}
             <div class="form-group">
-                <button href="/index/" class="btn btn-primary btn-block">  返回  </button>
-                <button href="/project/setting/" class="btn btn-primary btn-block">修改项目设定</button>
+                <a href="/index/" >
+                    <button class="btn btn-default">返回</button>
+                </a>
+                <a href="/project/problem_level/" >
+                    <button type="submit" class="btn btn-primary">修改项目设定</button>
+                </a>
             </div>
             {% else %}
             <div class="form-group">

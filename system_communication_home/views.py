@@ -194,8 +194,12 @@ def problem_solve(request):
         for i in all_problem:
             all_creator.append(i.pp_author)
         all_creator_information = MPC_User_ud.objects.filter(user_id__in=all_creator)
+        if request.method == "POST":
+            1
         return render(request, 'problem/solve.html', {
-            "all_problem": all_problem, "author": all_creator_information, "pj_level": pj_level})
+            "all_problem": all_problem, "author": all_creator_information, "pj_level": pj_level,
+            "message": message
+        })
     else:
         message = "请先加入或选择项目，再查看待处理问题。"
         return render(request, 'index/index.html', locals())

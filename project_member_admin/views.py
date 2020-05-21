@@ -42,7 +42,8 @@ def member_admin(request):
         return render(request, 'index/index.html', locals())
 
 
-# 成员申请管理[未完成]  分组1-5预设为用户自定义； 设置分组：0申请名单 ， 10历史名单[退出项目后保存记录]
+# 成员申请管理
+# 说明：分组1-5预设为用户自定义； 设置分组：0申请名单 ， 10历史名单[退出项目后保存记录]
 def join_admin(request):
     project_id = request.session.get('now_project_id', None)
     user_category = request.session.get('now_project_uc_id', None)
