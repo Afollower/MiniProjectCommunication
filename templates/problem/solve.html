@@ -7,44 +7,96 @@
     {% if message != '' %}
     <div class="alert alert-warning">{{message.message}}</div>
     {% endif %}
-<!-- 模态框 -->
+    <!-- 模态框 -->
     <div class="modal fade" id="myModal">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-
-        <!-- 模态框头部 -->
-        <div class="modal-header">
-          <h4 class="modal-title">模态框头部</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-
-        <!-- 模态框主体 -->
-        <div class="modal-body">
-          模态框内容..
-        </div>
-
-        <!-- 模态框底部 -->
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-        </div>
-
-      </div>
+        <form method="post" action="/index/problem_solve/">
+            {%csrf_token%}
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <!-- 模态框头部 -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">问题详情</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <!-- 模态框主体 -->
+                    <div class="modal-body">
+                        <div class="form-divider">基础信息</div>
+                        <div class="row">
+                            <div class="form-group col-4">
+                                <label>问题名称</label>
+                                <input name="pp_title" type="text" class="form-control"
+                                       value="{{show_problem.pp_title}}">
+                            </div>
+                            <div class="form-group col-4">
+                                <label>创建者</label>
+                                <input name="pp_author" type="text" class="form-control"
+                                       value="{{show_problem.pp_author}}" readonly="true">
+                            </div>
+                            <div class="form-group col-4">
+                                <label>级别</label>
+                                <select name="pl_id" class="form-control">
+                                {% for pl in pj_level %}
+                                {% if show_problem.pl_id == pl.pl_id %}
+                                <option value="{{pl.pl_id}}" selected>{{pl.pl_name}}</option>
+                                {% else %}
+                                <option value="{{pl.pl_id}}">{{pl.pl_name}}</option>
+                                {% endif %}
+                                {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-divider">重现步骤</div>
+                        <div class="row">
+                            <div class="form-group col-12">
+                                <textarea cols=90 rows=6 name="pp_information" style="resize: none;"
+                                          onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
+                                          onkeypress="LimitTextArea(this)">{{show_problem.pp_information}}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 模态框底部 -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
-  </div>
-
-
     <section class="section">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-12 col-sm-12">
 
                 <div class="card">
+                    <div class="row">
+                            <div class="form-group col-4">
+                                <label>问题名称</label>
+                                <input name="pp_title" type="text" class="form-control"
+                                       value="{{show_problem.pp_title}}">
+                            </div>
+                            <div class="form-group col-4">
+                                <label>创建者</label>
+                                <input name="pp_author" type="text" class="form-control"
+                                       value="{{show_problem.pp_author}}" readonly="true">
+                            </div>
+                            <div class="form-group col-4">
+                                <label>级别</label>
+                                <select name="pl_id" class="form-control">
+                                    {% for pl in project_pl %}
+                                    {% if show_problem.pl_id == pl.pl_id %}
+                                    <option value="{{pl.pl_id}}" selected>{{pl.pl_name}}</option>
+                                    {% else %}
+                                    <option value="{{pl.pl_id}}">{{pl.pl_name}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
                     <div class="card-header">
                         <h4>待处理</h4>
                     </div>
                     <div class="card-body">
-
                         <div class="table-responsive">
-
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
@@ -58,7 +110,6 @@
                                 </thead>
                                 <tbody>
                                 {% for problem in all_problem %}
-
                                 <tr>
                                     <td>{{problem.pp_id}}</td>
                                     <td>{{problem.pp_title}}</td>
@@ -78,20 +129,47 @@
                                     </td>
                                     <td>{{problem.pp_time}}</td>
                                     <td>
-<!--                                    <form method="post" action="/index/problem_solve/">-->
-<!--                                    {%csrf_token%}-->
+                                        <form method="post" action="/index/problem_solve/">
+                                        {%csrf_token%}
                                         <input name="pp_id" value="{{problem.pp_id}}" type="hidden">
-                                        <button name="todo" value="2" class="btn btn-primary btn-action mr-1" data-toggle="modal" data-target="#myModal"
-                                                title="Edit"><i class="icon ion-search"></i></button>
-                                        <a name="todo" value="3" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
-                                       title="Edit"><i class="ion ion-edit"></i></a>
+                                        <button name="todo" value="2"  class="btn btn-primary btn-action mr-1"
+                                           data-toggle="modal" data-target="#myModal" title="Edit"><i class="icon ion-search"></i></button>
+                                        <button name="todo" value="3" class="btn btn-primary btn-action mr-1"
+                                           data-toggle="tooltip" title="Edit"><i class="ion ion-edit"></i></button>
                                         <!-- 按钮触发模态框 -->
-<!--                                    </form>-->
+                                        </form>
                                     </td>
                                 </tr>
                                 {% endfor %}
                                 </tbody>
                             </table>
+                            {% if data %}
+                                <ul id="pages" class="pagination pagination-sm pagination-xs">
+                                    {% if data.first %}
+                                    <li><a href="?page=1">1</a></li>
+                                    {% endif %}
+                                    {% if data.left %}
+                                    {% if data.left_has_more %}
+                                    <li><span>...</span></li>
+                                    {% endif %}
+                                    {% for i in data.left %}
+                                    <li><a href="?page={{i}}">{{i}}</a></li>
+                                    {% endfor %}
+                                    {% endif %}
+                                    <li class="active"><a href="?page={{data.page}}">{{data.page}}</a></li>
+                                    {% if data.right %}
+                                    {% for i in data.right %}
+                                    <li><a href="?page={{i}}">{{i}}</a></li>
+                                    {% endfor %}
+                                    {% if data.right_has_more %}
+                                    <li><span>...</span></li>
+                                    {% endif %}
+                                    {% endif %}
+                                    {% if data.last %}
+                                    <li><a href="?page={{data.total_pages}}">{{data.total_pages}}</a></li>
+                                    {% endif %}
+                                </ul>
+                                {% endif %}
                         </div>
                     </div>
                 </div>
