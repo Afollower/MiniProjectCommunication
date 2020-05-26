@@ -7,6 +7,7 @@ urlpatterns = [
     path('problem_proposed/', views.problem_proposed),
     path('my_problem/', views.my_problem_list),
     path('problem_solve/', views.problem_solve),
+
     path('problem_resolved/', views.problem_resolved),
 
 ]

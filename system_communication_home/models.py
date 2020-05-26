@@ -27,12 +27,14 @@ class MPC_problem_sch(models.Model):
         verbose_name_plural = '项目问题信息'
 
 
-class MPC_Problem_complete_sch(models.Model):
-    pp_id = models.CharField(verbose_name="问题ID", max_length=32, unique=True)
-    ppc_time = models.CharField(verbose_name="问题实际用时", max_length=32)
+class MPC_Problem_communication_sch(models.Model):
+    pp_com_id = models.CharField(verbose_name="交谈次数ID", max_length=10)
+    ppc_user_id = models.CharField(verbose_name="创建者", max_length=32)
     ppc_describe = models.CharField(verbose_name="回复", max_length=255)
-    ppc_user_id = models.CharField(verbose_name="完成者", max_length=32)
     ppc_time = models.DateTimeField(auto_now_add=True)
+    # 引用外键
+    pp_id = models.CharField(verbose_name="问题ID", max_length=32)
+    project_id = models.CharField(verbose_name="项目ID", max_length=32)
 
     def __str__(self):
         return self.pp_id

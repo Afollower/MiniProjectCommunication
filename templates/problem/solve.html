@@ -7,36 +7,34 @@
     {% if message != '' %}
     <div class="alert alert-warning">{{message.message}}</div>
     {% endif %}
-    <!-- 模态框 -->
+    <!--
     <div class="modal fade" id="myModal">
         <form method="post" action="/index/problem_solve/">
             {%csrf_token%}
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
-                    <!-- 模态框头部 -->
                     <div class="modal-header">
                         <h4 class="modal-title">问题详情</h4>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
-                    <!-- 模态框主体 -->
                     <div class="modal-body">
                         <div class="form-divider">基础信息</div>
                         <div class="row">
                             <div class="form-group col-4">
                                 <label>问题名称</label>
                                 <input name="pp_title" type="text" class="form-control"
-                                       value="{{show_problem.pp_title}}">
+                                       value="{{problem.pp_title}}">
                             </div>
                             <div class="form-group col-4">
                                 <label>创建者</label>
                                 <input name="pp_author" type="text" class="form-control"
-                                       value="{{show_problem.pp_author}}" readonly="true">
+                                       value="{{problem.pp_author}}" readonly="true">
                             </div>
                             <div class="form-group col-4">
                                 <label>级别</label>
                                 <select name="pl_id" class="form-control">
                                 {% for pl in pj_level %}
-                                {% if show_problem.pl_id == pl.pl_id %}
+                                {% if problem.pl_id == pl.pl_id %}
                                 <option value="{{pl.pl_id}}" selected>{{pl.pl_name}}</option>
                                 {% else %}
                                 <option value="{{pl.pl_id}}">{{pl.pl_name}}</option>
@@ -50,11 +48,10 @@
                             <div class="form-group col-12">
                                 <textarea cols=90 rows=6 name="pp_information" style="resize: none;"
                                           onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
-                                          onkeypress="LimitTextArea(this)">{{show_problem.pp_information}}</textarea>
+                                          onkeypress="LimitTextArea(this)">{{problem.pp_information}}</textarea>
                             </div>
                         </div>
                     </div>
-                    <!-- 模态框底部 -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                         <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
@@ -63,35 +60,75 @@
             </div>
         </form>
     </div>
+    -->
     <section class="section">
         <div class="row">
-            <div class="col-lg-12 col-md-12 col-12 col-sm-12">
-
-                <div class="card">
-                    <div class="row">
-                            <div class="form-group col-4">
-                                <label>问题名称</label>
-                                <input name="pp_title" type="text" class="form-control"
-                                       value="{{show_problem.pp_title}}">
-                            </div>
-                            <div class="form-group col-4">
-                                <label>创建者</label>
-                                <input name="pp_author" type="text" class="form-control"
-                                       value="{{show_problem.pp_author}}" readonly="true">
-                            </div>
-                            <div class="form-group col-4">
-                                <label>级别</label>
-                                <select name="pl_id" class="form-control">
-                                    {% for pl in project_pl %}
-                                    {% if show_problem.pl_id == pl.pl_id %}
-                                    <option value="{{pl.pl_id}}" selected>{{pl.pl_name}}</option>
-                                    {% else %}
-                                    <option value="{{pl.pl_id}}">{{pl.pl_name}}</option>
+            <div class="col-lg-3 col-md-12 col-12 col-sm-12">
+                <form method="post" action="/index/problem_solve/">
+                    {%csrf_token%}
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>详情</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-divider">基础信息</div>
+                            <div class="row">
+                                <div class="form-group col-12">
+                                    <label>问题名称</label>
+                                    <input name="pp_title" type="text" class="form-control"
+                                           value="{{show_problem.pp_title}}">
+                                </div>
+                                <div class="form-group col-12">
+                                    <label>创建者</label>
+                                    {% for author in all_pg_member %}
+                                    {% if author.user_id == show_problem.pp_author %}
+                                    <input name="pp_author" type="text" class="form-control"
+                                           value="{{author.user_name}}" readonly="true">
                                     {% endif %}
                                     {% endfor %}
-                                </select>
+                                </div>
+                                <div class="form-group col-12">
+                                    <label>级别</label>
+                                    <select name="pl_id" class="form-control">
+                                        {% for pl in pj_level %}
+                                        {% if show_problem.pl_id == pl.pl_id %}
+                                        <option value="{{pl.pl_id}}" selected>{{pl.pl_name}}</option>
+                                        {% else %}
+                                        <option value="{{pl.pl_id}}">{{pl.pl_name}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-divider">重现步骤</div>
+                            <div class="row">
+                                <div class="form-group col-12">
+                                <textarea  name="pp_information" class="form-control"
+                                          onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
+                                          onkeypress="LimitTextArea(this)">{{show_problem.pp_information}}</textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-12">
+                                    <label>状态</label>
+                                    <select name="pp_state" class="form-control">
+                                        <option value="{{show_problem.pp_state}}" selected>{{show_problem.pp_state}}</option>
+                                        {% if show_problem.pp_state == '进行中' %}
+                                        <option value="已解决">已解决</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-12">
+                                    <label>预计用时</label>
+                                    <input name="pp_time" type="text" class="form-control" value="{{show_problem.pp_time}}">
+                                </div>
                             </div>
                         </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-9 col-md-12 col-12 col-sm-12">
+                <div class="card">
                     <div class="card-header">
                         <h4>待处理</h4>
                     </div>
@@ -114,7 +151,7 @@
                                     <td>{{problem.pp_id}}</td>
                                     <td>{{problem.pp_title}}</td>
                                     <td>
-                                        {% for user in author %}
+                                        {% for user in all_pg_member %}
                                         {% if problem.pp_author == user.user_id %}
                                         {{user.user_name}}
                                         {% endif %}
@@ -132,10 +169,10 @@
                                         <form method="post" action="/index/problem_solve/">
                                         {%csrf_token%}
                                         <input name="pp_id" value="{{problem.pp_id}}" type="hidden">
-                                        <button name="todo" value="2"  class="btn btn-primary btn-action mr-1"
-                                           data-toggle="modal" data-target="#myModal" title="Edit"><i class="icon ion-search"></i></button>
-                                        <button name="todo" value="3" class="btn btn-primary btn-action mr-1"
-                                           data-toggle="tooltip" title="Edit"><i class="ion ion-edit"></i></button>
+                                        <button name="todo" value="1"  class="btn btn-primary btn-action mr-1"
+                                           data-target="tooltip" title="Edit"><i class="icon ion-search"></i></button>
+                                        <button name="todo" value="2" class="btn btn-primary btn-action mr-1"
+                                           data-target="tooltip" title="Edit"><i class="ion ion-edit"></i></button>
                                         <!-- 按钮触发模态框 -->
                                         </form>
                                     </td>
@@ -144,32 +181,32 @@
                                 </tbody>
                             </table>
                             {% if data %}
-                                <ul id="pages" class="pagination pagination-sm pagination-xs">
+                                <ul id="pages" class="pagination">
                                     {% if data.first %}
-                                    <li><a href="?page=1">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
                                     {% endif %}
                                     {% if data.left %}
                                     {% if data.left_has_more %}
-                                    <li><span>...</span></li>
+                                    <li class="page-item"><span>...</span></li>
                                     {% endif %}
                                     {% for i in data.left %}
-                                    <li><a href="?page={{i}}">{{i}}</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
                                     {% endfor %}
                                     {% endif %}
-                                    <li class="active"><a href="?page={{data.page}}">{{data.page}}</a></li>
+                                    <li class="page-item active"><a class="page-link" href="?page={{data.page}}">{{data.page}}</a></li>
                                     {% if data.right %}
                                     {% for i in data.right %}
-                                    <li><a href="?page={{i}}">{{i}}</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
                                     {% endfor %}
                                     {% if data.right_has_more %}
-                                    <li><span>...</span></li>
+                                    <li class="page-item"><span>...</span></li>
                                     {% endif %}
                                     {% endif %}
                                     {% if data.last %}
-                                    <li><a href="?page={{data.total_pages}}">{{data.total_pages}}</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page={{data.total_pages}}">{{data.total_pages}}</a></li>
                                     {% endif %}
                                 </ul>
-                                {% endif %}
+                            {% endif %}
                         </div>
                     </div>
                 </div>

@@ -18,8 +18,14 @@ def project_create(request):
         project_creator_id = request.session.get('user_id', None)
         project_code1 = request.POST['project_code1']
         project_code2 = request.POST['project_code2']
+        # 不输入邀请码，自动生成6位
         if project_code1 == '':
-            project_code1 = random.sample('abcdefghijklmeopqrstuvwxyz', 6)
+            random_str = random.sample('abcdefghijklmeopqrstuvwxyz', 6)
+            project_code1 = 'Code_'
+            for i in random_str:
+                project_code1 = project_code1 + i
+            project_code2 = project_code1
+        print(project_code1)
         project_td = request.POST['project_td']
         # 创建项目ID MPC + 年月日 + 项目序号（从01开始99结束）
         create_time_y = timezone.now().year

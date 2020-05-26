@@ -175,7 +175,7 @@ def register(request):
                 new_user_state = MPC_User_state_ud.objects.create()
                 new_user_state.user_id = user_id
                 new_user_state.project_id = ''
-                new_user_state.pg_category_id = ''
+                new_user_state.pg_category_id = '-1'
                 new_user_state.save()
                 return redirect('/user/login/')  # 自动跳转到登录页面
     return render(request, 'login/register.html', locals())

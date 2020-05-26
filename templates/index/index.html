@@ -50,6 +50,35 @@
                                 {% endfor %}
                                 </tbody>
                             </table>
+                            <div class="float-right">
+                                {% if data2 %}
+                                <ul class="pagination">
+                                    {% if data2.first %}
+                                    <li class="page-item"><a class="page-link" href="?page_tmp=1">1</a></li>
+                                    {% endif %}
+                                    {% if data2.left %}
+                                    {% if data2.left_has_more %}
+                                    <li class="page-item"><span>...</span></li>
+                                    {% endif %}
+                                    {% for i in data2.left %}
+                                    <li class="page-item"><a class="page-link" href="?page_tmp={{i}}">{{i}}</a></li>
+                                    {% endfor %}
+                                    {% endif %}
+                                    <li class="page-item active"><a class="page-link" href="?page_tmp={{data2.page}}">{{data2.page}}</a></li>
+                                    {% if data2.right %}
+                                    {% for i in data2.right %}
+                                    <li class="page-item"><a class="page-link" href="?page_tmp={{i}}">{{i}}</a></li>
+                                    {% endfor %}
+                                    {% if data2.right_has_more %}
+                                    <li class="page-item"><span>...</span></li>
+                                    {% endif %}
+                                    {% endif %}
+                                    {% if data2.last %}
+                                    <li class="page-item"><a class="page-link" href="?page_tmp={{data2.total_pages}}">{{data2.total_pages}}</a></li>
+                                    {% endif %}
+                                </ul>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -97,6 +126,35 @@
                                 {% endfor %}
                                 </tbody>
                             </table>
+                            <div class="float-right">
+                                {% if data1 %}
+                                <ul id="pages" class="pagination">
+                                    {% if data1.first %}
+                                    <li class="page-item"><a class="page-link" href="?page_mp=1">1</a></li>
+                                    {% endif %}
+                                    {% if data1.left %}
+                                    {% if data1.left_has_more %}
+                                    <li class="page-item"><span>...</span></li>
+                                    {% endif %}
+                                    {% for i in data1.left %}
+                                    <li class="page-item"><a class="page-link" href="?page_mp={{i}}">{{i}}</a></li>
+                                    {% endfor %}
+                                    {% endif %}
+                                    <li class="page-item active"><a class="page-link" href="?page_mp={{data1.page}}">{{data1.page}}</a></li>
+                                    {% if data1.right %}
+                                    {% for i in data1.right %}
+                                    <li class="page-item"><a class="page-link" href="?page_mp={{i}}">{{i}}</a></li>
+                                    {% endfor %}
+                                    {% if data1.right_has_more %}
+                                    <li class="page-item"><span>...</span></li>
+                                    {% endif %}
+                                    {% endif %}
+                                    {% if data1.last %}
+                                    <li class="page-item"><a class="page-link" href="?page_mp={{data1.total_pages}}">{{data1.total_pages}}</a></li>
+                                    {% endif %}
+                                </ul>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -143,16 +201,43 @@
                                     {% endfor %}
                                     <td>
                                         <a class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
-                                           title="Edit"><i
-                                                class="ion ion-edit"></i></a>
+                                           title="Edit"><i class="ion ion-edit"></i></a>
                                         <a class="btn btn-danger btn-action" data-toggle="tooltip"
-                                           title="Delete"><i
-                                                class="ion ion-trash-b"></i></a>
+                                           title="Delete"><i class="ion ion-trash-b"></i></a>
                                     </td>
                                 </tr>
                                 {% endfor %}
                                 </tbody>
                             </table>
+                            <div class="float-right">
+                                {% if data3 %}
+                                <ul class="pagination">
+                                    {% if data3.first %}
+                                    <li class="page-item"><a class="page-link" href="?page_ap=1">1</a></li>
+                                    {% endif %}
+                                    {% if data3.left %}
+                                    {% if data3.left_has_more %}
+                                    <li class="page-item"><span>...</span></li>
+                                    {% endif %}
+                                    {% for i in data3.left %}
+                                    <li class="page-item"><a class="page-link" href="?page_ap={{i}}">{{i}}</a></li>
+                                    {% endfor %}
+                                    {% endif %}
+                                    <li class="page-item active"><a class="page-link" href="?page_ap={{data3.page}}">{{data3.page}}</a></li>
+                                    {% if data3.right %}
+                                    {% for i in data3.right %}
+                                    <li class="page-item"><a class="page-link" href="?page_ap={{i}}">{{i}}</a></li>
+                                    {% endfor %}
+                                    {% if data3.right_has_more %}
+                                    <li class="page-item"><span>...</span></li>
+                                    {% endif %}
+                                    {% endif %}
+                                    {% if data3.last %}
+                                    <li class="page-item"><a class="page-link" href="?page_ap={{data3.total_pages}}">{{data3.total_pages}}</a></li>
+                                    {% endif %}
+                                </ul>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -3,7 +3,7 @@ from . import models
 from project_admin.models import MPC_Level_pj_pd, MPC_Project_pd
 from project_member_admin.models import MPC_Category_pg_pmd, MPC_Member_pg_pmd
 from user_admin.models import MPC_User_ud
-from .models import MPC_problem_sch, MPC_Problem_complete_sch
+from .models import MPC_problem_sch, MPC_Problem_communication_sch
 from django.db.models import Max, Min
 # 将查询到的数据转换为json
 import json
@@ -19,7 +19,115 @@ def index(request):
     user_id = request.session.get('user_id', None)
     project_id = request.session.get('now_project_id', None)
     my_problem = MPC_problem_sch.objects.filter(project_id=project_id, pp_author=user_id)
+    limit = 4
+    # 数据分页
+    my_problem_pages = Paginator(my_problem, limit)
+    if my_problem_pages.num_pages <= 1:
+        problem_list1 = my_problem
+        data1 = ''
+    else:
+        page = int(request.GET.get('page_mp', 1))
+        problem_list1 = my_problem_pages.page(page)
+        # 表单默认设置【初始】
+        left = []  # 当前页左边连续的页码号，初始值为空
+        right = []  # 当前页右边连续的页码号，初始值为空
+        left_has_more = False  # 标示第 1 页页码后是否需要显示省略号
+        right_has_more = False  # 标示最后一页页码前是否需要显示省略号
+        first = False  # 标示是否需要显示第 1 页的页码号。
+        last = False  # 标示是否需要显示最后一页的页码号。
+        total_pages = my_problem_pages.num_pages  # 总页数
+        page_range = my_problem_pages.page_range
+        if page == 1:  # 如果请求第1页
+            right = page_range[page:page + 2]  # 获取右边连续号码页
+            if right[-1] < total_pages - 1:  # 如果最右边的页码号比最后一页的页码号减去 1 还要小，
+                # 说明最右边的页码号和最后一页的页码号之间还有其它页码，因此需要显示省略号，通过 right_has_more 来指示。
+                right_has_more = True
+            if right[-1] < total_pages:  # 如果最右边的页码号比最后一页的页码号小，说明当前页右边的连续页码号中不包含最后一页的页码
+                # 所以需要显示最后一页的页码号，通过 last 来指示
+                last = True
+        elif page == total_pages:  # 如果请求最后一页
+            left = page_range[(page - 3) if (page - 3) > 0 else 0:page - 1]  # 获取左边连续号码页
+            # 页数不确定
+            if left[0] > 2:
+                left_has_more = True  # 如果最左边的号码比2还要大，说明其与第一页之间还有其他页码，因此需要显示省略号，通过 left_has_more 来指示
+            if left[0] > 1:  # 如果最左边的页码比1要大，则要显示第一页，否则第一页已经被包含在其中
+                first = True
+        else:  # 如果请求的页码既不是第一页也不是最后一页
+            left = page_range[(page - 3) if (page - 3) > 0 else 0:page - 1]  # 获取左边连续号码页
+            right = page_range[page:page + 2]  # 获取右边连续号码页
+            if left[0] > 2:
+                left_has_more = True
+            if left[0] > 1:
+                first = True
+            if right[-1] < total_pages - 1:
+                right_has_more = True
+            if right[-1] < total_pages:
+                last = True
+        data1 = {  # 将数据包含在data字典中
+            'left': left,
+            'right': right,
+            'left_has_more': left_has_more,
+            'right_has_more': right_has_more,
+            'first': first,
+            'last': last,
+            'total_pages': total_pages,
+            'page': page
+        }
+
     to_my_problem = MPC_problem_sch.objects.filter(project_id=project_id, pp_to_user=user_id).exclude(pp_state='已解决')
+    # 数据分页
+    to_my_problem_pages = Paginator(to_my_problem, limit)
+    if to_my_problem_pages.num_pages <= 1:
+        problem_list2 = to_my_problem
+        data2 = ''
+    else:
+        page = int(request.GET.get('page_tmp', 1))
+        problem_list2 = to_my_problem_pages.page(page)
+        # 表单默认设置【初始】
+        left = []  # 当前页左边连续的页码号，初始值为空
+        right = []  # 当前页右边连续的页码号，初始值为空
+        left_has_more = False  # 标示第 1 页页码后是否需要显示省略号
+        right_has_more = False  # 标示最后一页页码前是否需要显示省略号
+        first = False  # 标示是否需要显示第 1 页的页码号。
+        last = False  # 标示是否需要显示最后一页的页码号。
+        total_pages = to_my_problem_pages.num_pages  # 总页数
+        page_range = to_my_problem_pages.page_range
+        if page == 1:  # 如果请求第1页
+            right = page_range[page:page + 2]  # 获取右边连续号码页
+            if right[-1] < total_pages - 1:  # 如果最右边的页码号比最后一页的页码号减去 1 还要小，
+                # 说明最右边的页码号和最后一页的页码号之间还有其它页码，因此需要显示省略号，通过 right_has_more 来指示。
+                right_has_more = True
+            if right[-1] < total_pages:  # 如果最右边的页码号比最后一页的页码号小，说明当前页右边的连续页码号中不包含最后一页的页码
+                # 所以需要显示最后一页的页码号，通过 last 来指示
+                last = True
+        elif page == total_pages:  # 如果请求最后一页
+            left = page_range[(page - 3) if (page - 3) > 0 else 0:page - 1]  # 获取左边连续号码页
+            # 页数不确定
+            if left[0] > 2:
+                left_has_more = True  # 如果最左边的号码比2还要大，说明其与第一页之间还有其他页码，因此需要显示省略号，通过 left_has_more 来指示
+            if left[0] > 1:  # 如果最左边的页码比1要大，则要显示第一页，否则第一页已经被包含在其中
+                first = True
+        else:  # 如果请求的页码既不是第一页也不是最后一页
+            left = page_range[(page - 3) if (page - 3) > 0 else 0:page - 1]  # 获取左边连续号码页
+            right = page_range[page:page + 2]  # 获取右边连续号码页
+            if left[0] > 2:
+                left_has_more = True
+            if left[0] > 1:
+                first = True
+            if right[-1] < total_pages - 1:
+                right_has_more = True
+            if right[-1] < total_pages:
+                last = True
+        data2 = {  # 将数据包含在data字典中
+            'left': left,
+            'right': right,
+            'left_has_more': left_has_more,
+            'right_has_more': right_has_more,
+            'first': first,
+            'last': last,
+            'total_pages': total_pages,
+            'page': page
+        }
     # 获取项目成员信息
     pg_member = MPC_Member_pg_pmd.objects.filter(pg_id=project_id)
     author = []
@@ -28,9 +136,63 @@ def index(request):
     author_information = MPC_User_ud.objects.filter(user_id__in=author)
     # 所有问题
     all_problem = MPC_problem_sch.objects.filter(project_id=project_id)
+    # 数据分页
+    all_problem_pages = Paginator(all_problem, limit)
+    if all_problem_pages.num_pages <= 1:
+        problem_list3 = all_problem
+        data3 = ''
+    else:
+        page = int(request.GET.get('page_ap', 1))
+        problem_list3 = all_problem_pages.page(page)
+        # 表单默认设置【初始】
+        left = []  # 当前页左边连续的页码号，初始值为空
+        right = []  # 当前页右边连续的页码号，初始值为空
+        left_has_more = False  # 标示第 1 页页码后是否需要显示省略号
+        right_has_more = False  # 标示最后一页页码前是否需要显示省略号
+        first = False  # 标示是否需要显示第 1 页的页码号。
+        last = False  # 标示是否需要显示最后一页的页码号。
+        total_pages = all_problem_pages.num_pages  # 总页数
+        page_range = all_problem_pages.page_range
+        if page == 1:  # 如果请求第1页
+            right = page_range[page:page + 2]  # 获取右边连续号码页
+            if right[-1] < total_pages - 1:  # 如果最右边的页码号比最后一页的页码号减去 1 还要小，
+                # 说明最右边的页码号和最后一页的页码号之间还有其它页码，因此需要显示省略号，通过 right_has_more 来指示。
+                right_has_more = True
+            if right[-1] < total_pages:  # 如果最右边的页码号比最后一页的页码号小，说明当前页右边的连续页码号中不包含最后一页的页码
+                # 所以需要显示最后一页的页码号，通过 last 来指示
+                last = True
+        elif page == total_pages:  # 如果请求最后一页
+            left = page_range[(page - 3) if (page - 3) > 0 else 0:page - 1]  # 获取左边连续号码页
+            # 页数不确定
+            if left[0] > 2:
+                left_has_more = True  # 如果最左边的号码比2还要大，说明其与第一页之间还有其他页码，因此需要显示省略号，通过 left_has_more 来指示
+            if left[0] > 1:  # 如果最左边的页码比1要大，则要显示第一页，否则第一页已经被包含在其中
+                first = True
+        else:  # 如果请求的页码既不是第一页也不是最后一页
+            left = page_range[(page - 3) if (page - 3) > 0 else 0:page - 1]  # 获取左边连续号码页
+            right = page_range[page:page + 2]  # 获取右边连续号码页
+            if left[0] > 2:
+                left_has_more = True
+            if left[0] > 1:
+                first = True
+            if right[-1] < total_pages - 1:
+                right_has_more = True
+            if right[-1] < total_pages:
+                last = True
+        data3 = {  # 将数据包含在data字典中
+            'left': left,
+            'right': right,
+            'left_has_more': left_has_more,
+            'right_has_more': right_has_more,
+            'first': first,
+            'last': last,
+            'total_pages': total_pages,
+            'page': page
+        }
     return render(request, 'index/index.html', {
-        "my_problem": my_problem, "to_my_problem": to_my_problem,
-        "author_information": author_information, "all_problem": all_problem
+        "my_problem": problem_list1, "to_my_problem": problem_list2,
+        "author_information": author_information, "all_problem": problem_list3,
+        'data1': data1, 'data2': data2, 'data3': data3
     })
 
 
@@ -38,8 +200,9 @@ def index(request):
 def problem_proposed(request):
     message = ''
     user_pgc = int(request.session.get('now_project_uc_id', None))
+    print(user_pgc)
     # 判断是否加入项目[双重保险]
-    if user_pgc <= 4 or user_pgc >= 1:
+    if user_pgc in [1, 4]:
         project_id = request.session.get('now_project_id', None)
         user_id = request.session.get('user_id', None)
         if request.method == "POST":
@@ -108,7 +271,7 @@ def my_problem_list(request):
     message = ''
     user_pgc = int(request.session.get('now_project_uc_id', None))
     # 判断是否加入项目[双重保险]
-    if user_pgc <= 4 or user_pgc >= 1:
+    if user_pgc in [1, 4]:
         user_id = request.session.get('user_id', None)
         project_id = request.session.get('now_project_id', None)
         try:
@@ -189,7 +352,7 @@ def problem_solve(request):
     message = ''
     user_pgc = int(request.session.get('now_project_uc_id', None))
     # 判断是否加入项目[双重保险]
-    if user_pgc <= 4 or user_pgc >= 1:
+    if user_pgc in [1, 4]:
         project_id = request.session.get('now_project_id', None)
         user_id = request.session.get('user_id', None)
         all_problem = MPC_problem_sch.objects.filter(pp_to_user=user_id, project_id=project_id).\
@@ -201,15 +364,6 @@ def problem_solve(request):
         else:
             message = '当前项目无需要处理问题！'
             return render(request, 'index/index.html', locals())
-        # 点击显示
-        if request.method == "POST":
-            todo = request.POST['todo']
-            if todo == '2':
-                show_pp_id = request.POST['pp_id']
-            # elif todo == '2':
-            #
-        # 获取显示问题信息
-        show_problem = MPC_problem_sch.objects.get(pp_id=show_pp_id, project_id=project_id)
         # 数据分页
         limit = 5
         pages = Paginator(all_problem, limit)
@@ -228,10 +382,8 @@ def problem_solve(request):
             last = False  # 标示是否需要显示最后一页的页码号。
             total_pages = pages.num_pages  # 总页数
             page_range = pages.page_range
-            print(page_range)
             if page == 1:  # 如果请求第1页
                 right = page_range[page:page + 2]  # 获取右边连续号码页
-                print(total_pages)
                 if right[-1] < total_pages - 1:  # 如果最右边的页码号比最后一页的页码号减去 1 还要小，
                     # 说明最右边的页码号和最后一页的页码号之间还有其它页码，因此需要显示省略号，通过 right_has_more 来指示。
                     right_has_more = True
@@ -270,12 +422,58 @@ def problem_solve(request):
         # 获取项目级别信息
         pj_level = MPC_Level_pj_pd.objects.filter(project_id=project_id)
         # 获取作者信息
+        pg_member = MPC_Member_pg_pmd.objects.filter(pg_id=project_id)
         all_creator = []
-        for i in all_problem:
-            all_creator.append(i.pp_author)
-        all_creator_information = MPC_User_ud.objects.filter(user_id__in=all_creator)
+        for i in pg_member:
+            all_creator.append(i.user_id)
+        all_pg_member = MPC_User_ud.objects.filter(user_id__in=all_creator)
+        # 点击显示
+        if request.method == "POST":
+            todo = request.POST['todo']
+            if todo == '1':
+                show_pp_id = request.POST['pp_id']
+            elif todo == '2':
+                show_pp_id = request.POST['pp_id']
+                show_problem = MPC_problem_sch.objects.get(pp_id=show_pp_id, project_id=project_id)
+                try:
+                    all_communication_hst = MPC_Problem_communication_sch.objects.filter(pp_id=show_pp_id,
+                                                                                         project_id=project_id)
+                    return render(request, 'problem/solve1.html', {
+                        "show_problem": show_problem, "all_pg_member": all_pg_member,
+                        "pj_level": pj_level, "all_pp_communication": all_communication_hst, "message": message
+                    })
+                except:
+                    return render(request, 'problem/solve1.html', {
+                        "show_problem": show_problem, "all_pg_member": all_pg_member,
+                        "pj_level": pj_level, "all_pp_communication": '', "message": message
+                    })
+            elif todo == '3':
+                ppc_describe = request.POST['ppc_describe']
+                pp_state = request.POST['pp_state']
+                if pp_state == '已解决':
+                    show_problem = MPC_problem_sch.objects.get(pp_id=show_pp_id, project_id=project_id)
+                    show_problem.pp_state = '已解决'
+                try:
+                    all_communication_hst = MPC_Problem_communication_sch.objects.filter(pp_id=show_pp_id,
+                                                                                         project_id=project_id)
+                    max_communication_hst = all_communication_hst.aggregate(Max('pp_com_id'))
+                    max_pp_com_id = str(max_communication_hst['pp_com_id__max'])
+                    new_pp_com_id = str(int(max_pp_com_id) + 1)
+                except:
+                    new_pp_com_id = '1'
+                new_pp_com = MPC_Problem_communication_sch.objects.create()
+                new_pp_com.pp_com_id = new_pp_com_id
+                new_pp_com.ppc_user_id = user_id
+                new_pp_com.ppc_describe = ppc_describe
+                new_pp_com.project_id = project_id
+                new_pp_com.pp_id = show_pp_id
+                new_pp_com.save()
+                message = '已解决'
+                return render(request, 'index/index.html', {"massage": message})
+        # 获取显示问题信息
+        show_problem = MPC_problem_sch.objects.get(pp_id=show_pp_id, project_id=project_id)
         return render(request, 'problem/solve.html', {
-            "all_problem": problem_list, "author": all_creator_information, "pj_level": pj_level,
+            "all_problem": problem_list, "all_pg_member": all_pg_member, "pj_level": pj_level,
             "show_problem": show_problem, "data": data, "message": message
         })
     else:
@@ -288,12 +486,19 @@ def problem_resolved(request):
     message = ''
     user_pgc = int(request.session.get('now_project_uc_id', None))
     # 判断是否加入项目[双重保险]
-    if user_pgc <= 4 or user_pgc >= 1:
+    if user_pgc in [1, 4]:
         project_id = request.session.get('now_project_id', None)
         user_id = request.session.get('user_id', None)
         all_problem = MPC_problem_sch.objects.filter(pp_to_user=user_id, project_id=project_id).exclude(pp_state='进行中')
         # 获取查询的
-
+        if request.method == "POST":
+            todo = request.POST['todo']
+            if todo == '1':
+                show_pp_id = request.POST['pp_id']
+                print(show_pp_id)
+            else:
+                show_pp_id = request.POST['pp_id']
+        show_problem = MPC_problem_sch.objects.get(pp_id=show_pp_id, project_id=project_id)
         # 数据分页
         limit = 5
         pages = Paginator(all_problem, limit)
@@ -312,7 +517,6 @@ def problem_resolved(request):
             last = False    # 标示是否需要显示最后一页的页码号。
             total_pages = pages.num_pages   # 总页数
             page_range = pages.page_range
-            print(page_range)
             if page == 1:  # 如果请求第1页
                 right = page_range[page:page + 2]  # 获取右边连续号码页
                 print(total_pages)
@@ -340,28 +544,27 @@ def problem_resolved(request):
                     right_has_more = True
                 if right[-1] < total_pages:
                     last = True
-            data = {  # 将数据包含在data字典中
-                'left': left,
-                'right': right,
-                'left_has_more': left_has_more,
-                'right_has_more': right_has_more,
-                'first': first,
-                'last': last,
-                'total_pages': total_pages,
-                'page': page
-            }
-            # 获取项目级别信息
-            pj_level = MPC_Level_pj_pd.objects.filter(project_id=project_id)
-            # 获取作者信息
-            all_creator = []
-            for i in all_problem:
-                all_creator.append(i.pp_author)
-            all_creator_information = MPC_User_ud.objects.filter(user_id__in=all_creator)
-            return render(request, 'index.html', context={
-                'problem_list': problem_list, 'data': data,
-                "author": all_creator_information, "pj_level": pj_level, "message": message
-            })
-
+        data = {  # 将数据包含在data字典中
+            'left': left,
+            'right': right,
+            'left_has_more': left_has_more,
+            'right_has_more': right_has_more,
+            'first': first,
+            'last': last,
+            'total_pages': total_pages,
+            'page': page
+        }
+        # 获取项目级别信息
+        pj_level = MPC_Level_pj_pd.objects.filter(project_id=project_id)
+        # 获取作者信息
+        all_creator = []
+        for i in all_problem:
+            all_creator.append(i.pp_author)
+        all_creator_information = MPC_User_ud.objects.filter(user_id__in=all_creator)
+        return render(request, 'index.html', context={
+            'problem_list': problem_list, 'data': data,
+            "author": all_creator_information, "pj_level": pj_level, "message": message
+        })
     else:
         message = "请先加入或选择项目，再查看处理问题记录。"
         return render(request, 'index/index.html', locals())

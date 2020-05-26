@@ -86,7 +86,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'miniprojectcommunication',
         'USER': 'root',
-        'PASSWORD': 'renC1210///',
+        'PASSWORD': '17761015663',
         'HOST': 'localhost',
         'POST': '3306',
     }
