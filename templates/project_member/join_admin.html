@@ -36,8 +36,8 @@
                                     <td>
                                         <select name="pg_category" >
                                         {% for pgc in pg_category %}
-                                        {% if pgc.pg_category_id == member.pg_category_id %}
-                                            <option value="{{pgc.pg_category_id}}">{{pgc.pg_category_name}}</option>
+                                        {% if pgc.pg_category_id == '2' %}
+                                            <option value="{{pgc.pg_category_id}}" selected>{{pgc.pg_category_name}}</option>
                                         {% else %}
                                             <option value="{{pgc.pg_category_id}}">{{pgc.pg_category_name}}</option>
                                         {% endif %}

@@ -45,7 +45,7 @@ class MPC_Level_pj_pd(models.Model):
 # 项目日程表
 class MPC_Schedule_pd(models.Model):
     project_id = models.CharField(verbose_name="项目ID", max_length=32)
-    schedule_id = models.CharField(verbose_name="日程阶段", max_length=12)
+    schedule_id = models.CharField(verbose_name="日程阶段ID", max_length=12)
     schedule_name = models.CharField(verbose_name="阶段名称", max_length=64)
     start_time = models.CharField(verbose_name="阶段开始时间", max_length=12)
     end_time = models.CharField(verbose_name="阶段结束时间", max_length=12)

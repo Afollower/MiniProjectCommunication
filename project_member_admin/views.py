@@ -55,6 +55,7 @@ def join_admin(request):
         members = []
         for i in member:
             members.append(i.user_id)
+            print(i.user_id)
         member_information = MPC_User_ud.objects.filter(user_id__in=members)
         if request.method == "POST":
             todo = request.POST['todo']
@@ -67,8 +68,9 @@ def join_admin(request):
             else:
                 MPC_Member_pg_pmd.objects.get(user_id=member_id, pg_id=project_id).delete()
             return redirect('/project_member/join_admin/')
-        return render(request, 'project_member/join_admin.html', {"member_information": member_information,
-                                                                  "pg_category": pg_category})
+        return render(request, 'project_member/join_admin.html', {
+            "member_information": member_information, "members": member, "pg_category": pg_category
+        })
     else:
         message = '您的权限不足！'
     return render(request, 'project_member/join_admin.html', locals())
