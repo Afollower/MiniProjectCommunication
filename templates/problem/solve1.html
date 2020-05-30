@@ -19,13 +19,12 @@
                         <div class="card-body">
                             <div class="form-divider">基础信息</div>
                             <div class="row">
-                                {% if show_problem.pp_author == request.session.user_id %}
-                                <div class="form-group col-4">
+                                <div class="form-group col-6">
                                     <label>问题名称</label>
                                     <input name="pp_title" type="text" class="form-control"
-                                           value="{{show_problem.pp_title}}">
+                                           value="{{show_problem.pp_title}}" readonly>
                                 </div>
-                                <div class="form-group col-4">
+                                <div class="form-group col-6">
                                     <label>创建者</label>
                                     {% for author in all_pg_member %}
                                     {% if author.user_id == show_problem.pp_author %}
@@ -34,72 +33,42 @@
                                     {% endif %}
                                     {% endfor %}
                                 </div>
-                                <div class="form-group col-4">
+                                <div class="form-group col-6">
                                     <label>级别</label>
-                                    <select name="pl_id" class="form-control">
-                                        {% for pl in pj_level %}
-                                        {% if show_problem.pl_id == pl.pl_id %}
-                                        <option value="{{pl.pl_id}}" selected>{{pl.pl_name}}</option>
-                                        {% else %}
-                                        <option value="{{pl.pl_id}}">{{pl.pl_name}}</option>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                {% else %}
-                                <div class="form-group col-4">
-                                    <label>问题名称</label>
-                                    <input name="pp_title" type="text" class="form-control"
-                                           value="{{show_problem.pp_title}}" readonly="true">
-                                </div>
-                                <div class="form-group col-4">
-                                    <label>创建者</label>
-                                    {% for author in author %}
-                                    {% if author.user_id == show_problem.pp_author %}
-                                    <input name="pp_author" type="text" class="form-control"
-                                           value="{{author.user_name}}" readonly="true">
+                                    {% for pl in pj_level %}
+                                    {% if show_problem.pl_id == pl.pl_id %}
+                                    <input name="pl_name" type="text" class="form-control"
+                                           value="{{pl.pl_name}}" readonly>
                                     {% endif %}
                                     {% endfor %}
                                 </div>
-                                <div class="form-group col-4">
-                                    <label>级别</label>
-                                    <select name="pl_id" class="form-control">
-                                        {% for pl in pj_level %}
-                                        {% if show_problem.pl_id == pl.pl_id %}
-                                        <option value="{{pl.pl_id}}" selected>{{pl.pl_name}}</option>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </select>
+                                <div class="form-group col-6">
+                                    <label>所处阶段</label>
+                                    {% for sc in all_schedule %}
+                                    {% if show_problem.schedule_id == sc.schedule_id %}
+                                    <input name="schedule_id" type="text" class="form-control"
+                                           value="{{sc.schedule_name}}" readonly>
+                                    {% endif %}
+                                    {% endfor %}
                                 </div>
-                                {% endif %}
                             </div>
 
                             <div class="row">
                                 <div class="form-group col-12">
                                     <div class="form-divider">重现步骤</div>
-                                    {% if show_problem.pp_author == request.session.user_id %}
-                                    <textarea  name="pp_information" class="form-control"
-                                              onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
-                                              onkeypress="LimitTextArea(this)">{{show_problem.pp_information}}</textarea>
-                                    {% else %}
-                                        <textarea  name="pp_information" class="form-control"
-                                              onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
-                                              onkeypress="LimitTextArea(this)" readonly>{{show_problem.pp_information}}</textarea>
-                                    {% endif %}
+                                    <textarea id="textarea" name="pp_information" class="form-control"
+                                          onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
+                                          onkeypress="LimitTextArea(this)" readonly>{{show_problem.pp_information}}</textarea>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="form-group col-6">
-                                    <div class="form-divider">提出时间</div>
+                                    <div class="form-divider">创建时间</div>
                                     <input name="pp_time" type="text" class="form-control" value="{{show_problem.c_time}}" readonly>
                                 </div>
                                 <div class="form-group col-6">
                                     <div class="form-divider">预计结束时间</div>
-                                    {% if show_problem.pp_author == request.session.user_id %}
-                                    <input name="pp_time" type="text" class="form-control" value="{{show_problem.pp_time}}">
-                                    {% else %}
                                     <input name="pp_time" type="text" class="form-control" value="{{show_problem.pp_time}}" readonly>
-                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -118,7 +87,7 @@
                                 <div class="form-divider">[{{ppc.pp_com_id}}] {{member.user_name}} :{{ppc.ppc_time}} </div>
                                 {% endif %}
                                 {% endfor %}
-                                <textarea  name="pp_information" class="form-control"
+                                <textarea id="textarea" name="pp_information" class="form-control"
                                           onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
                                           onkeypress="LimitTextArea(this)" readonly>{{ppc.ppc_describe}}</textarea>
                             </div>
@@ -145,7 +114,7 @@
                             <div class="row">
                                 <div class="form-group col-12">
                                 <div class="form-divider">情况说明</div>
-                                <textarea  name="ppc_describe" class="form-control"
+                                <textarea id="textarea" name="ppc_describe" class="form-control"
                                           onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
                                           onkeypress="LimitTextArea(this)"></textarea>
                                 </div>

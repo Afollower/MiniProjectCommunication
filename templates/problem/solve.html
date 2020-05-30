@@ -5,69 +5,20 @@
 
 <div class="main-content">
     {% if message != '' %}
-    <div class="alert alert-warning">{{message.message}}</div>
+    <div class="alert alert-warning">{{message}}</div>
     {% endif %}
-    <!--
-    <div class="modal fade" id="myModal">
-        <form method="post" action="/index/problem_solve/">
-            {%csrf_token%}
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">问题详情</h4>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-divider">基础信息</div>
-                        <div class="row">
-                            <div class="form-group col-4">
-                                <label>问题名称</label>
-                                <input name="pp_title" type="text" class="form-control"
-                                       value="{{problem.pp_title}}">
-                            </div>
-                            <div class="form-group col-4">
-                                <label>创建者</label>
-                                <input name="pp_author" type="text" class="form-control"
-                                       value="{{problem.pp_author}}" readonly="true">
-                            </div>
-                            <div class="form-group col-4">
-                                <label>级别</label>
-                                <select name="pl_id" class="form-control">
-                                {% for pl in pj_level %}
-                                {% if problem.pl_id == pl.pl_id %}
-                                <option value="{{pl.pl_id}}" selected>{{pl.pl_name}}</option>
-                                {% else %}
-                                <option value="{{pl.pl_id}}">{{pl.pl_name}}</option>
-                                {% endif %}
-                                {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-divider">重现步骤</div>
-                        <div class="row">
-                            <div class="form-group col-12">
-                                <textarea cols=90 rows=6 name="pp_information" style="resize: none;"
-                                          onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
-                                          onkeypress="LimitTextArea(this)">{{problem.pp_information}}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-    -->
     <section class="section">
         <div class="row">
-            <div class="col-lg-3 col-md-12 col-12 col-sm-12">
+            <div class="col-lg-4 col-md-12 col-12 col-sm-12">
                 <form method="post" action="/index/problem_solve/">
                     {%csrf_token%}
                     <div class="card">
                         <div class="card-header">
+                            {% if all_pp_communication %}
+                            <div class="float-right">
+                                <button data-toggle="collapse" data-target="#demo" type="button" class="btn btn-primary">History</button>
+                            </div>
+                            {% endif %}
                             <h4>详情</h4>
                         </div>
                         <div class="card-body">
@@ -76,58 +27,39 @@
                                 <div class="form-group col-12">
                                     <label>问题名称</label>
                                     <input name="pp_title" type="text" class="form-control"
-                                           value="{{show_problem.pp_title}}">
+                                           value="{{show_problem.pp_title}}" readonly>
                                 </div>
                                 <div class="form-group col-12">
-                                    <label>创建者</label>
-                                    {% for author in all_pg_member %}
-                                    {% if author.user_id == show_problem.pp_author %}
-                                    <input name="pp_author" type="text" class="form-control"
-                                           value="{{author.user_name}}" readonly="true">
-                                    {% endif %}
-                                    {% endfor %}
+                                <label>重现步骤</label>
+                                <textarea id="textarea" name="pp_information" class="form-control"
+                                          onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
+                                          onkeypress="LimitTextArea(this)" readonly>{{show_problem.pp_information}}</textarea>
                                 </div>
-                                <div class="form-group col-12">
-                                    <label>级别</label>
-                                    <select name="pl_id" class="form-control">
-                                        {% for pl in pj_level %}
-                                        {% if show_problem.pl_id == pl.pl_id %}
-                                        <option value="{{pl.pl_id}}" selected>{{pl.pl_name}}</option>
-                                        {% else %}
-                                        <option value="{{pl.pl_id}}">{{pl.pl_name}}</option>
+                            </div>
+                            <div class="form-divider">处理记录</div>
+                            {% if all_pp_communication %}
+                            <div id="demo" class="collapse">
+                                {% for ppc in all_pp_communication %}
+                                <div class="row">
+                                    <div class="form-group col-12">
+                                        {% for member in all_pg_member %}
+                                        {% if member.user_id == ppc.ppc_user_id %}
+                                        <div class="form-divider">[{{ppc.pp_com_id}}] {{member.user_name}} :{{ppc.ppc_time}} </div>
                                         {% endif %}
                                         {% endfor %}
-                                    </select>
+                                        <textarea id="textarea" name="pp_information" class="form-control"
+                                                  onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
+                                                  onkeypress="LimitTextArea(this)" readonly>{{ppc.ppc_describe}}</textarea>
+                                    </div>
                                 </div>
+                                {% endfor %}
                             </div>
-                            <div class="form-divider">重现步骤</div>
-                            <div class="row">
-                                <div class="form-group col-12">
-                                <textarea  name="pp_information" class="form-control"
-                                          onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
-                                          onkeypress="LimitTextArea(this)">{{show_problem.pp_information}}</textarea>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group col-12">
-                                    <label>状态</label>
-                                    <select name="pp_state" class="form-control">
-                                        <option value="{{show_problem.pp_state}}" selected>{{show_problem.pp_state}}</option>
-                                        {% if show_problem.pp_state == '进行中' %}
-                                        <option value="已解决">已解决</option>
-                                        {% endif %}
-                                    </select>
-                                </div>
-                                <div class="form-group col-12">
-                                    <label>预计用时</label>
-                                    <input name="pp_time" type="text" class="form-control" value="{{show_problem.pp_time}}">
-                                </div>
-                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="col-lg-9 col-md-12 col-12 col-sm-12">
+            <div class="col-lg-8 col-md-12 col-12 col-sm-12">
                 <div class="card">
                     <div class="card-header">
                         <h4>待处理</h4>
@@ -141,7 +73,7 @@
                                     <th>标题</th>
                                     <th>作者</th>
                                     <th>问题级别</th>
-                                    <th>预计用时</th>
+                                    <th>预计结束时间</th>
                                     <th>操作</th>
                                 </tr>
                                 </thead>

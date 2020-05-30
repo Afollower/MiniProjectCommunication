@@ -17,16 +17,16 @@
                     <div class="card-body">
                         <div class="form-divider">基础信息</div>
                         <div class="row">
-                            <div class="form-group col-4">
+                            <div class="form-group col-6">
                                 <label>问题名称</label>
                                 <input name="pp_title" type="text" class="form-control">
                             </div>
-                            <div class="form-group col-4">
+                            <div class="form-group col-6">
                                 <label>创建者</label>
                                 <input name="pp_author" type="text" class="form-control"
                                        value="{{request.session.user_name}}"  readonly="true">
                             </div>
-                            <div class="form-group col-4">
+                            <div class="form-group col-6">
                                 <label>级别</label>
                                 <select name="pl_id" class="form-control">
                                     {% for pl in project_pl %}
@@ -34,11 +34,19 @@
                                     {% endfor %}
                                 </select>
                             </div>
+                            <div class="form-group col-6">
+                                <label>所处阶段</label>
+                                <select name="schedule_id" class="form-control">
+                                    {% for sc in schedule %}
+                                    <option value="{{sc.schedule_id}}">{{sc.schedule_name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
                         <div class="form-divider">重现步骤</div>
                         <div class="row">
                             <div class="form-group col-12">
-                                <textarea cols=90 rows=5 name="pp_information" style="resize: none;"
+                                <textarea id="textarea" name="pp_information" class="form-control"
                                           onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
                                           onkeypress="LimitTextArea(this)"></textarea>
                             </div>
@@ -53,8 +61,8 @@
                                 </select>
                             </div>
                             <div class="form-group col-6">
-                                <label>预计用时</label>
-                                <input name="pp_time" type="text" class="form-control">
+                                <label>预计结束</label>
+                                <input name="pp_time" type="date" class="form-control">
                             </div>
                         </div>
                         <div class="form-group">
@@ -74,11 +82,6 @@
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
-<!--                                <tr>-->
-<!--                                    <th>问题ID</th>-->
-<!--                                    <th>标题</th>-->
-<!--                                    <th>操作</th>-->
-<!--                                </tr>-->
                                 </thead>
                                 <tbody>
                                 {% for member in pg_member %}

@@ -39,7 +39,15 @@
     <script src="/static/js/scripts.js"></script>
     <script src="/static/js/custom.js"></script>
 
-
+    <style type="text/css">
+        .comments {
+         width:100%;/*自动适应父布局宽度*/
+         overflow:auto;
+         word-break:break-all;
+        /*在ie中解决断行问题(防止自动变为在一行显示，主要解决ie兼容问题，ie8中当设宽度为100%时，文本域类容超过一行时，
+        当我们双击文本内容就会自动变为一行显示，所以只能用ie的专有断行属性“word-break或word-wrap”控制其断行)*/
+        }
+    </style>
     {% block css %}{% endblock %}
 </head>
 
@@ -154,21 +162,19 @@
                         <ul class="menu-dropdown">
                             <li><a href="/index/problem_proposed"><i class="ion ion-ios-circle-outline"></i> 提出问题</a></li>
                             <li><a href="/index/my_problem/"><i class="ion ion-ios-circle-outline"></i> 问题记录</a></li>
-                            <li><a href=""><i class="ion ion-ios-circle-outline"></i> 总览</a></li>
                         </ul>
                     </li>
                     <li>
-                        <a href="#" class="has-dropdown"><i class="ion ion-flag"></i><span>待处理问题</span></a>
+                        <a href="#" class="has-dropdown"><i class="ion ion-flag"></i><span>处理问题</span></a>
                         <ul class="menu-dropdown">
                             <li><a href="/index/problem_solve/"><i class="ion ion-ios-circle-outline"></i> 待处理</a></li>
                             <li><a href="/index/problem_resolved/"><i class="ion ion-ios-circle-outline"></i> 已处理</a></li>
-                            <li><a href="flag.html"><i class="ion ion-ios-circle-outline"></i> 总览</a></li>
                         </ul>
                     </li>
                     <li class="menu-header">项目概览</li>
 
                     <li>
-                        <a href="#" class="has-dropdown"><i class="ion ion-clipboard"></i><span>我的项目</span></a>
+                        <a href="#" class="has-dropdown"><i class="ion ion-clipboard"></i><span>项目管理</span></a>
                         <ul class="menu-dropdown">
                             <li><a href="/project/created"><i class="ion ion-ios-circle-outline"></i> 建立项目</a></li>
                             <li><a href="#" class="has-dropdown"><i class="ion ion-ios-circle-outline"></i> 项目设定</a>
@@ -193,7 +199,7 @@
                     </li>
                     <li>
                         <a href="#" class="has-dropdown"><i
-                                class="ion ion-ios-copy-outline"></i><span>已加入项目</span></a>
+                                class="ion ion-ios-copy-outline"></i><span>我的项目</span></a>
                         <ul class="menu-dropdown">
                             <li><a href="/project/join/"><i class="ion ion-ios-circle-outline"></i> 加入项目</a></li>
                             <li><a href="/project/my/"><i class="ion ion-ios-circle-outline"></i> 我的项目</a>
@@ -288,8 +294,6 @@ function add_member_div_node(this_id, div_class, label_text, input_name, input_d
     inputElement.setAttribute("class", "form-control")
     if (input_display == "true"){
         inputElement.setAttribute("readonly", input_display)
-        var input_value = document.getElementById(this_id).getElementsByTagName('div').length;
-        inputElement.setAttribute("value", input_value / 3 + 1)
     }
 
 
@@ -311,7 +315,7 @@ function add_pgc_Node(add_sum_id, this_id) {
         var input_name1 = "pg_category_id" + (group_length + 1).toString()
         console.log(input_name1)
         var div_class = "form-group col-2"
-        add_member_div_node(this_id, div_class, label_name1, input_name1, "true", "")
+        add_member_div_node(this_id, div_class, label_name1, input_name1, "true", (group_length + 1).toString())
 
         var label_name1 = "名称"
         var input_name1 = "pg_category_name" + (group_length + 1).toString()
@@ -370,7 +374,7 @@ function add_level_Node(add_sum_id, this_id){
         var label_name1 = "级别" + "[ " + (group_length + 1).toString() + " ]"
         var input_name1 = "pl_id" + (group_length + 1).toString()
         var div_class = "form-group col-2"
-        add_member_div_node(this_id, div_class, label_name1, input_name1, "true", "")
+        add_member_div_node(this_id, div_class, label_name1, input_name1, "true", (group_length + 1).toString())
 
         var label_name1 = "名称"
         var input_name1 = "pl_name" + (group_length + 1).toString()
@@ -419,6 +423,50 @@ function del_level_Node(sum_id, this_id, min_sum){
 
 
 
+</script>
+
+<script>
+    function makeExpandingArea(el) {
+    var timer = null;
+    //由于ie8有溢出堆栈问题，故调整了这里
+    var setStyle = function(el, auto) {
+        if (auto) el.style.height = 'auto';
+        el.style.height = el.scrollHeight + 'px';
+    }
+    var delayedResize = function(el) {
+        if (timer) {
+            clearTimeout(timer);
+            timer = null;
+        }
+        timer = setTimeout(function() {
+            setStyle(el)
+        }, 200);
+    }
+    if (el.addEventListener) {
+        el.addEventListener('input', function() {
+            setStyle(el, 1);
+        }, false);
+        setStyle(el)
+    } else if (el.attachEvent) {
+        el.attachEvent('onpropertychange', function() {
+            setStyle(el)
+        })
+        setStyle(el)
+    }
+    if (window.VBArray && window.addEventListener) { //IE9
+        el.attachEvent("onkeydown", function() {
+            var key = window.event.keyCode;
+            if (key == 8 || key == 46) delayedResize(el);
+
+        });
+        el.attachEvent("oncut", function() {
+            delayedResize(el);
+        }); //处理粘贴
+    }
+}
+
+var textarea = document.getElementById('textarea');
+makeExpandingArea(textarea);
 </script>
 <!--实现主题选择JS-->
 <script src="/static/js/demo.js"></script>

@@ -28,7 +28,7 @@
                                     <td>{{problem.pp_id}}</td>
                                     <td>{{problem.pp_title}}</td>
                                     <td>
-                                        {% for user in author %}
+                                        {% for user in member_information %}
                                         {% if problem.pp_author == user.user_id %}
                                         {{user.user_name}}
                                         {% endif %}
@@ -46,7 +46,7 @@
                                         <form method="post" action="/index/problem_resolved/">
                                             {%csrf_token%}
                                             <input name="pp_id" value="{{problem.pp_id}}" type="hidden">
-                                            <button name="todo" value="2" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
+                                            <button name="todo" value="1" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
                                                     title="Edit"><i class="icon ion-search"></i></button>
                                         </form>
                                     </td>

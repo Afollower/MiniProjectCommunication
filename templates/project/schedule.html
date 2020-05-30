@@ -1,152 +1,226 @@
 {% extends 'base.html' %}
-{% block title %}创建项目{% endblock %}
+{% block title %}日程设定{% endblock %}
 {% block content %}
-<div class="main-content">
-    <section class="section">
-        <div class="row">
-            <div class="col-lg-7 col-md-12 col-12 col-sm-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="float-right">
-                            <a href="#" class="btn btn-primary">View All</a>
-                        </div>
-                        <h4>待处理问题</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Author</th>
-                                    <th>Action</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <!-- 样例 -->
-                                <tr>
-                                    <td>
-                                        Laravel 5 Tutorial - Installation
-                                        <div class="table-links">
-                                            in <a href="#">Web Development</a>
-                                            <div class="bullet"></div>
-                                            <a href="#">View</a>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="#"> Bagus Dwi Cahya</a>
-                                    </td>
-                                    <td>
-                                        <a class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
-                                           title="Edit"><i
-                                                class="ion ion-edit"></i></a>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+<div class="modal modal-default fade" id="modal-class">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">导入日程文件</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span></button>
             </div>
-            <div class="col-lg-5 col-md-12 col-12 col-sm-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="float-right">
-                            <a href="#" class="btn btn-primary">View All</a>
-                        </div>
-                        <div class="float-right">
-                            <a href="#" class="btn btn-primary">add</a>
-                        </div>
-                        <h4>我的问题</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Action</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <!-- 样例 -->
-                                <tr>
-                                    <td>
-                                        Laravel 5 Tutorial - Installation
-                                        <div class="table-links">
-                                            in <a href="#">Web Development</a>
-                                            <div class="bullet"></div>
-                                            <a href="#">View</a>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
-                                           title="Edit"><i
-                                                class="ion ion-edit"></i></a>
-                                        <a class="btn btn-danger btn-action" data-toggle="tooltip"
-                                           title="Delete"><i
-                                                class="ion ion-trash-b"></i></a>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-
-                        </div>
-                    </div>
-                </div>
+            <div class="modal-body">
+                <form method="post" action="/project/schedule/" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <br>请上传文件<input type="file" name="files"><br>
+                    <input type="submit" value="上传">
+                    <br>
+                    <b><small>文件上传执行结果：</small></b><hr>
+                </form>
             </div>
         </div>
+    </div>
+</div>
+<div class="main-content">
+    <section class="section">
+        <form method="post" action="/project/schedule/">
+        {% csrf_token %}
         <div class="row">
             <div class="col-lg-12 col-md-12 col-12 col-sm-12">
                 <div class="card">
                     <div class="card-header">
                         <div class="float-right">
-                            <a href="#" class="btn btn-primary">View All</a>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-class">import</i>
+                            </button>
                         </div>
-                        <h4>所有记录</h4>
+                        <h4>日程设定</h4>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Author</th>
-                                    <th>Action</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <!-- 样例 -->
-                                <tr>
-                                    <td>
-                                        Laravel 5 Tutorial - Installation
-                                        <div class="table-links">
-                                            in <a href="#">Web Development</a>
-                                            <div class="bullet"></div>
-                                            <a href="#">View</a>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="#"> Bagus Dwi Cahya</a>
-                                    </td>
-                                    <td>
-                                        <a class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
-                                           title="Edit"><i
-                                                class="ion ion-edit"></i></a>
-                                        <a class="btn btn-danger btn-action" data-toggle="tooltip"
-                                           title="Delete"><i
-                                                class="ion ion-trash-b"></i></a>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
+                        <div class="form-divider">
+                            <div class="float-right">
+                                <span onclick="javascript:del_schedule_Node('schedule_sum','add_schedule')"
+                                      class="btn btn-primary btn-sm">del</span>
+                                <span onclick="javascript:add_schedule_Node('schedule_sum','add_schedule')"
+                                      class="btn btn-primary btn-sm">add</span>
+                                <input name="schedule_sum" id="schedule_sum"
+                                value="2" style="display:none">
+                            </div>
+                            日程设定
                         </div>
+                        <div class="row" id="add_schedule">
+                            {% for schedule in all_schedule %}
+                             <div class="form-group col-1" id="schedule_id{{schedule.schedule_id}}">
+                                 <label>阶段编号</label>
+                                 <input name="schedule_id{{schedule.schedule_id}}" type="text" class="form-control"
+                                       value = "{{schedule.schedule_id}}"  readonly="true" autofocus>
+                             </div>
+                             <div class="form-group col-1" id="schedule_name{{schedule.schedule_id}}">
+                                 <label>阶段名称</label>
+                                 <input name="schedule_name{{schedule.schedule_id}}" value="{{schedule.schedule_name}}"
+                                       type="text" class="form-control" autofocus>
+                             </div>
+                             <div class="form-group col-2" id="start_time{{schedule.schedule_id}}">
+                                 <label>开始时间</label>
+                                 <input name="start_time{{schedule.schedule_id}}" value="{{schedule.start_time}}" type="date" class="form-control"  autofocus>
+                             </div>
+                             <div class="form-group col-2" id="end_time{{schedule.schedule_id}}">
+                                 <label>结束时间</label>
+                                 <input name="end_time{{schedule.schedule_id}}" type="date" value="{{schedule.end_time}}" class="form-control" id='datetimepicker2' autofocus>
+                             </div>
+                             <div class="form-group col-6" id="schedule_td{{schedule.schedule_id}}">
+                                 <label>阶段事项</label>
+                                 <textarea class="form-control" name="schedule_td{{schedule.schedule_id}}" style="resize: none;"
+                                          onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
+                                          onkeypress="LimitTextArea(this)">{{schedule.schedule_td}}</textarea>
+                             </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            确认
+                        </button>
+                    </div>
                     </div>
                 </div>
             </div>
         </div>
+        </form>
     </section>
 </div>
 
 
+<script>
+function add_member_text_node(this_id, div_class, label_text, input_name, input_display, input_value){
+    var ilElement = document.getElementById(this_id);
+    var divElement = document.createElement('div')
+    var labelElement = document.createElement('label')
+    var textElement = document.createElement('textarea');
+    var text = document.createTextNode(label_text); //label_text
+    divElement.setAttribute("class", div_class)     //div_class
+    divElement.setAttribute("id", input_name)       //添加div id
+
+    //判断是否可以修改
+
+    textElement.setAttribute("name", input_name)   //input_name
+    textElement.setAttribute("value", input_value) //input_value
+    textElement.setAttribute("style", "resize: none;")
+    textElement.setAttribute("class", "form-control")
+    textElement.setAttribute("onKeyDown", "form-LimitTextArea(this)")
+    textElement.setAttribute("onKeyUp", "LimitTextArea(this)")
+    textElement.setAttribute("onkeypress", "LimitTextArea(this)")
+
+    ilElement.appendChild(divElement);
+    divElement.appendChild(labelElement);
+    divElement.appendChild(textElement);
+    labelElement.appendChild(text);
+}
+
+
+function add_member_date_node(this_id, div_class, label_text, input_name, input_display, input_value){
+    var ilElement = document.getElementById(this_id);
+    var divElement = document.createElement('div')
+    var labelElement = document.createElement('label')
+    var inputElement = document.createElement('input');
+    var text = document.createTextNode(label_text); //label_text
+    divElement.setAttribute("class", div_class)     //div_class
+    divElement.setAttribute("id", input_name)       //添加div id
+
+    //判断是否可以修改
+    inputElement.setAttribute("type", "date")
+    inputElement.setAttribute("name", input_name)   //input_name
+    inputElement.setAttribute("value", input_value) //input_value
+    inputElement.setAttribute("class", "form-control")
+    if (input_display == "true"){
+        inputElement.setAttribute("readonly", input_display)
+    }
+
+
+    ilElement.appendChild(divElement);
+    divElement.appendChild(labelElement);
+    divElement.appendChild(inputElement);
+    labelElement.appendChild(text);
+}
+
+
+// 动态添加成员分类类别
+function add_schedule_Node(add_sum_id, this_id) {
+    //得到当前div中的div个数
+    var this_length=document.getElementById(this_id).getElementsByTagName('div').length;
+    console.log(this_length)
+    if(this_length<=200){//最多有40组div
+        group_length = this_length / 5;
+
+        var label_name1 = "阶段编号" + "[ " + (group_length + 1).toString() + " ]"
+        var input_name1 = "schedule_id" + (group_length + 1).toString()
+        console.log(input_name1)
+        var div_class = "form-group col-1"
+        add_member_div_node(this_id, div_class, label_name1, input_name1, "true", (group_length + 1).toString())
+
+        var label_name1 = "阶段名称"
+        var input_name1 = "schedule_name" + (group_length + 1).toString()
+        var div_class = "form-group col-1"
+        add_member_div_node(this_id, div_class, label_name1, input_name1, "false", "")
+
+        var label_name1 = "开始时间"
+        var input_name1 = "start_time" + (group_length + 1).toString()
+        var div_class = "form-group col-2"
+        add_member_date_node(this_id, div_class, label_name1, input_name1, "false", "")
+
+
+        var label_name1 = "结束时间"
+        var input_name1 = "end_time" + (group_length + 1).toString()
+        var div_class = "form-group col-2"
+        add_member_date_node(this_id, div_class, label_name1, input_name1, "false", "")
+
+
+        var label_name1 = "阶段事项"
+        var input_name1 = "schedule_td" + (group_length + 1).toString()
+        var div_class = "form-group col-6"
+        add_member_text_node(this_id, div_class, label_name1, input_name1, "false", "")
+
+        //统计 div 组的个数
+
+        var sumElement = document.getElementById(add_sum_id);
+        sumElement.setAttribute("value", group_length + 1)
+    }
+}
+
+
+
+// 动态删除
+function del_schedule_Node(sum_id, this_id, min_sum){
+    //得到当前div中的div个数，默认的1个无法删除
+    var this_length=document.getElementById(this_id).getElementsByTagName('div').length;
+    console.log(this_length)
+    if(this_length>10){
+        group_length = this_length / 5;
+
+        var input_name1 = "schedule_id" + group_length.toString()
+        console.log(input_name1)
+        var id_div = document.getElementById(input_name1)
+
+        var input_name1 = "schedule_name" + group_length.toString()
+        var name_div = document.getElementById(input_name1)
+
+        var input_name1 = "start_time" + group_length.toString()
+        var start_div = document.getElementById(input_name1)
+
+        var input_name1 = "end_time" + group_length.toString()
+        var end_div = document.getElementById(input_name1)
+
+        var input_name1 = "schedule_td" + group_length.toString()
+        var td_div = document.getElementById(input_name1)
+
+        var parent_div = document.getElementById(this_id)
+        parent_div.removeChild(id_div)
+        parent_div.removeChild(name_div)
+        parent_div.removeChild(start_div)
+        parent_div.removeChild(end_div)
+        parent_div.removeChild(td_div)
+    }
+    var this_length = document.getElementById(this_id).getElementsByTagName('div').length;
+    var sumElement = document.getElementById(sum_id);
+    sumElement.setAttribute("value", this_length / 5)
+}
+</script>
 {% endblock %}

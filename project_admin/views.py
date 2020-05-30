@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.db.models import Max
-from .models import MPC_Project_pd, MPC_Level_pj_pd
+from .models import MPC_Project_pd, MPC_Level_pj_pd, MPC_Schedule_pd
 from project_member_admin.models import MPC_Project_group_pmd, MPC_Member_pg_pmd, MPC_Category_pg_pmd
 from user_admin.models import MPC_User_state_ud, MPC_User_ud
 import random
 import string
+
 
 # Create your views here.
 
@@ -164,14 +165,48 @@ def project_information(request):
 
 # 项目日程管理[未完成]
 def set_project_schedule(request):
-    pass
-    return render(request, 'project/create.html')
+    project_id = request.session.get('now_project_id', None)
+    user_category = int(request.session.get('now_project_uc_id', None))
+    if user_category == 1:
+        all_schedule = MPC_Schedule_pd.objects.filter(project_id=project_id)
+        if request.method == "POST":
+            schedule_sum = int(request.POST['schedule_sum'])
+            print(schedule_sum)
+            for i in range(1, schedule_sum+1):
+                schedule_id = request.POST['schedule_id' + str(i)]
+                schedule_name = request.POST['schedule_name' + str(i)]
+                start_time = request.POST['start_time' + str(i)]
+                end_time = request.POST['end_time' + str(i)]
+                schedule_td = request.POST['schedule_td' + str(i)]
+                print(schedule_id, schedule_name, start_time, end_time)
+                try:
+                    schedule = MPC_Schedule_pd.objects.get(project_id=project_id, schedule_id=schedule_id)
+                except :
+                    schedule = MPC_Schedule_pd.objects.create()
+                    schedule.project_id = project_id
+                    schedule.schedule_id = schedule_id
+
+                schedule.schedule_name = schedule_name
+                schedule.start_time = start_time
+                schedule.end_time = end_time
+                schedule.schedule_td = schedule_td
+                schedule.save()
+            return render(request, 'index/index.html', {"message": '日程设定成功！'})
+        return render(request, 'project/schedule.html', {
+            "all_schedule": all_schedule
+        })
+    elif user_category > 1 or user_category <= 4:
+        message = '您的权限不足！'
+        return render(request, 'index/index.htm', locals())
+    else:
+        message = '请先创建项目！'
+        return render(request, 'index/index.htm', locals())
 
 
 # 设置项目问题等级
 def set_project_pl(request):
-    user_category = request.session.get('now_project_uc_id', None)
-    if user_category == '1':
+    user_category = int(request.session.get('now_project_uc_id', None))
+    if user_category == 1:
         project_id = request.session.get('now_project_id', None)
         project_pl = MPC_Level_pj_pd.objects.filter(project_id=project_id)
         old = 0
@@ -229,8 +264,8 @@ def set_project_pl(request):
 
 # 项目分组信息设定
 def set_project_group(request):
-    user_category = request.session.get('now_project_uc_id', None)
-    if user_category == '1':
+    user_category = int(request.session.get('now_project_uc_id', None))
+    if user_category == 1:
         project_id = request.session.get('now_project_id', None)
         pg_category = MPC_Category_pg_pmd.objects.filter(pg_id=project_id)
         old_pgc = pg_category.aggregate(Max('pg_category_id'))

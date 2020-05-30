@@ -10,12 +10,14 @@ class MPC_problem_sch(models.Model):
     pp_author = models.CharField(verbose_name="作者", max_length=32)
     pp_information = models.CharField(verbose_name="问题详情", max_length=255)
     pp_state = models.CharField(verbose_name="问题状态", max_length=25, default="进行中")
-    pp_time = models.CharField(verbose_name="预计用时", max_length=20, default='0')
     pp_to_user = models.CharField(verbose_name="处理者", max_length=32)
+    c_time = models.DateTimeField(auto_now_add=True)
+    pp_time = models.CharField(verbose_name="预计结束时间", max_length=20, default='0')
     # 引用外键 project/Project_group->获取问题级别ID【项目ID可来自系统主页正在使用的项目】
     project_id = models.CharField(verbose_name="项目ID", max_length=32)
     pl_id = models.CharField(verbose_name="问题级别ID", max_length=32)
-    c_time = models.DateTimeField(auto_now_add=True)
+    schedule_id = models.CharField(verbose_name="日程阶段ID", max_length=12)
+
 
     def __str__(self):
         return self.pp_id

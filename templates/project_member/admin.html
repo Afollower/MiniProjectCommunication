@@ -31,12 +31,16 @@
                                     <td>{{member.user_company}}</td>
                                     <td>
                                         <select name="pg_category" >
-                                        {% for pgc in pg_category %}
-                                        {% if pgc.pg_category_id == member.pg_category_id %}
-                                            <option value="{{pgc.pg_category_id}}" selected>{{pgc.pg_category_name}}</option>
-                                        {% else %}
-                                            <option value="{{pgc.pg_category_id}}">{{pgc.pg_category_name}}</option>
-                                        {% endif %}
+                                        {% for mem in members %}
+                                            {% if mem.user_id == member.user_id %}
+                                                {% for pgc in pg_category %}
+                                                {% if pgc.pg_category_id == mem.pg_category_id %}
+                                                <option value="{{pgc.pg_category_id}}" selected>{{pgc.pg_category_name}}</option>
+                                                {% else %}
+                                                <option value="{{pgc.pg_category_id}}">{{pgc.pg_category_name}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
                                         {% endfor %}
                                         </select>
                                     </td>

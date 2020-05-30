@@ -130,6 +130,7 @@ def logout(request):
 
 # 注册
 def register(request):
+    message = ''
     if request.session.get('is_login', None):
         # 登录状态不允许注册。
         return redirect("/index/")
@@ -146,16 +147,16 @@ def register(request):
         if user_id and user_email and password1:  # 判断是否为空
             if password1 != password2:  # 判断两次密码是否相同
                 message = "两次输入的密码不同！"
-                return render(request, 'login/register.html', locals())
+                return render(request, 'login/register.html', {"message": message})
             else:
                 same_name_id = MPC_User_ud.objects.filter(user_name=user_name)
                 if same_name_id:  # 用户名唯一
                     message = '账户已经存在！'
-                    return render(request, 'login/register.html', locals())
+                    return render(request, 'login/register.html', {"message": message})
                 same_email = MPC_User_ud.objects.filter(user_email=user_email)
                 if same_email:  # 邮箱地址唯一
                     message = '该邮箱已注册！'
-                    return render(request, 'login/register.html', locals())
+                    return render(request, 'login/register.html', {"message": message})
 
                 # 当一切都OK的情况下，创建新用户
                 # 创建用户表
@@ -169,16 +170,17 @@ def register(request):
                 new_user.user_sex = user_sex
                 new_user.user_company = user_company
                 new_user.user_position = user_position
-                new_user.save()
 
                 # 创建状态表
                 new_user_state = MPC_User_state_ud.objects.create()
                 new_user_state.user_id = user_id
                 new_user_state.project_id = ''
                 new_user_state.pg_category_id = '-1'
+
+                new_user.save()
                 new_user_state.save()
                 return redirect('/user/login/')  # 自动跳转到登录页面
-    return render(request, 'login/register.html', locals())
+    return render(request, 'login/register.html', {"message": message})
 
 
 # 个人信息

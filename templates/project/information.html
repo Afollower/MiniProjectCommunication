@@ -46,64 +46,64 @@
                 </div>
             </div>
             {% if request.session.now_project_uc_id == '1' %}
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-12 col-sm-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4>项目分组信息</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                    <tr>
-                                        <th>项目组名</th>
-                                        <th>描述</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for uc in project_uc %}
-                                    <tr>
-                                        <td>{{uc.pg_category_name}}</td>
-                                        <td>{{uc.pg_category_describe}}</td>
-                                    </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-12 col-sm-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4>项目问题级别信息</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                    <tr>
-                                        <th>问题级别名称</th>
-                                        <th>问题级别描述</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for pl in project_problem_level %}
-                                    <tr>
-                                        <td>{{pl.pl_name}}</td>
-                                        <td>{{pl.pl_describe}}</td>
-                                    </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!--            <div class="row">-->
+<!--                <div class="col-lg-12 col-md-12 col-12 col-sm-12">-->
+<!--                    <div class="card">-->
+<!--                        <div class="card-header">-->
+<!--                            <h4>项目分组信息</h4>-->
+<!--                        </div>-->
+<!--                        <div class="card-body">-->
+<!--                            <div class="table-responsive">-->
+<!--                                <table class="table table-striped">-->
+<!--                                    <thead>-->
+<!--                                    <tr>-->
+<!--                                        <th>项目组名</th>-->
+<!--                                        <th>描述</th>-->
+<!--                                    </tr>-->
+<!--                                    </thead>-->
+<!--                                    <tbody>-->
+<!--                                    {% for uc in project_uc %}-->
+<!--                                    <tr>-->
+<!--                                        <td>{{uc.pg_category_name}}</td>-->
+<!--                                        <td>{{uc.pg_category_describe}}</td>-->
+<!--                                    </tr>-->
+<!--                                    {% endfor %}-->
+<!--                                    </tbody>-->
+<!--                                </table>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="row">-->
+<!--                <div class="col-lg-12 col-md-12 col-12 col-sm-12">-->
+<!--                    <div class="card">-->
+<!--                        <div class="card-header">-->
+<!--                            <h4>项目问题级别信息</h4>-->
+<!--                        </div>-->
+<!--                        <div class="card-body">-->
+<!--                            <div class="table-responsive">-->
+<!--                                <table class="table table-striped">-->
+<!--                                    <thead>-->
+<!--                                    <tr>-->
+<!--                                        <th>问题级别名称</th>-->
+<!--                                        <th>问题级别描述</th>-->
+<!--                                    </tr>-->
+<!--                                    </thead>-->
+<!--                                    <tbody>-->
+<!--                                    {% for pl in project_problem_level %}-->
+<!--                                    <tr>-->
+<!--                                        <td>{{pl.pl_name}}</td>-->
+<!--                                        <td>{{pl.pl_describe}}</td>-->
+<!--                                    </tr>-->
+<!--                                    {% endfor %}-->
+<!--                                    </tbody>-->
+<!--                                </table>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-12 col-sm-12">
                     <div class="card">
@@ -111,12 +111,13 @@
                             <h4>项目简介</h4>
                         </div>
                         <div class="card-body">
+                            <div class="row">
                             <div class="form-group col-12">
-                                <br>
-                                <textarea cols=100 rows="10" name="project_td" style="resize: none;"
+                                <textarea class="form-control" name="project_td" style="resize: none;"
                                           onKeyDown="LimitTextArea(this)" onKeyUp="LimitTextArea(this)"
                                           onkeypress="LimitTextArea(this)">{{project.project_td}}</textarea>
-                                </div>
+                            </div>
+                            </div>
                         </div>
                     </div>
                 </div>

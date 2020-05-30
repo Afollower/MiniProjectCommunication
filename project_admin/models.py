@@ -50,7 +50,7 @@ class MPC_Schedule_pd(models.Model):
     start_time = models.CharField(verbose_name="阶段开始时间", max_length=12)
     end_time = models.CharField(verbose_name="阶段结束时间", max_length=12)
     schedule_td = models.CharField(verbose_name="阶段事项", max_length=255)
-    schedule_speed = models.CharField(verbose_name="阶段完成度", max_length=12, default=0)
+    schedule_speed = models.CharField(verbose_name="阶段完成度", max_length=12, default='0')
     c_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -61,3 +61,17 @@ class MPC_Schedule_pd(models.Model):
         ordering = ['project_id']
         verbose_name = '项目日程'
         verbose_name_plural = '项目日程信息'
+
+
+# 用例文件
+class CaseFile(models.Model):
+    file_name = models.FileField(upload_to='case/%Y/%m/%d/', verbose_name=u"文件名称")
+
+    # 不注释会报错
+    # def __str__(self):
+    #     return self.file_name
+
+    # 定义表名称
+    class Meta:
+        verbose_name = "用例文件管理"
+        verbose_name_plural = "用例文件管理"

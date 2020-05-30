@@ -34,7 +34,7 @@ class MPC_User_ud(models.Model):
 # 用户状态信息
 class MPC_User_state_ud(models.Model):
     user_id = models.CharField(verbose_name="用户ID", max_length=32, unique=True)
-    project_id = models.CharField(verbose_name="当前项目ID", max_length=32, unique=True)
+    project_id = models.CharField(verbose_name="当前项目ID", max_length=32)
     pg_category_id = models.CharField("用户等级", max_length=32)
 
     def __str__(self):
