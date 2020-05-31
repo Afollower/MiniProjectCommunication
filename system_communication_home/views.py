@@ -263,12 +263,15 @@ def problem_proposed(request):
         project_id = request.session.get('now_project_id', None)
         user_id = request.session.get('user_id', None)
         if request.method == "POST":
-            max_pp_id = MPC_problem_sch.objects.filter(project_id=project_id).aggregate(Max('pp_id'))
-            # 问题ID ：取最大值+1（第一个问题为 1）
-            if max_pp_id['pp_id__max']:
-                pp_id = str(int(max_pp_id['pp_id__max']) + 1)
-            else:
+            try:
+                max_pp_id = MPC_problem_sch.objects.filter(project_id=project_id)\
+                    .values('project_id').annotate(pp_sum=Count('project_id')).order_by()
+                pp_id = str(max_pp_id[0]['pp_sum'] + 1)
+            except:
                 pp_id = '1'
+            # 问题ID ：取最大值+1（第一个问题为 1）
+            print("#####################")
+            print(pp_id)
             pp_title = request.POST['pp_title']
             pp_author = user_id
             pp_information = request.POST['pp_information']
@@ -302,7 +305,7 @@ def problem_proposed(request):
                 # 添加第一条交流信息：提交问题，请尽快处理。
                 new_pp_communication = MPC_Problem_communication_sch.objects.create()
                 new_pp_communication.pp_com_id = '1'
-                new_pp_communication.pp_user_id = user_id
+                new_pp_communication.ppc_user_id = user_id
                 new_pp_communication.ppc_describe = '问题已提交，请尽快处理！'
                 new_pp_communication.pp_id = pp_id
                 new_pp_communication.project_id = project_id
@@ -408,6 +411,7 @@ def my_problem_list(request):
                     all_problem = MPC_problem_sch.objects.filter(pp_author=user_id, project_id=project_id)
                 if todo == '3':
                     del_problem = MPC_problem_sch.objects.get(pp_id=show_pp_id, project_id=project_id)
+
                     del_problem_com = MPC_Problem_communication_sch.objects.filter(pp_id=show_pp_id,
                                                                                    project_id=project_id)
                     if del_problem.pp_state == "已解决":

@@ -10,7 +10,7 @@ class MPC_Project_group_pmd(models.Model):
     pg_name = models.CharField(verbose_name="项目组名", max_length=128)
     # 引用外键 project/Project
     project_id = models.CharField(verbose_name="项目ID", max_length=32)
-    c_time = models.DateTimeField(auto_now_add=True)
+    c_time = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
 
     def __str__(self):
         return self.pg_id
@@ -30,7 +30,7 @@ class MPC_Member_pg_pmd(models.Model):
     user_id = models.CharField(verbose_name="用户ID", max_length=32)
     submit_sum = models.IntegerField(verbose_name="提交问题个数", default=0)
     handle_sum = models.IntegerField(verbose_name="处理问题个数", default=0)
-    c_time = models.DateTimeField(auto_now_add=True)
+    c_time = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
 
     def __str__(self):
         return self.pg_id
@@ -49,7 +49,7 @@ class MPC_Category_pg_pmd(models.Model):
     pg_category_describe = models.CharField(verbose_name="描述", max_length=128)
     # 引用外键 project_member_admin/Project_Group
     pg_id = models.CharField(verbose_name="项目组ID", max_length=32)
-    c_time = models.DateTimeField(auto_now_add=True)
+    c_time = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
 
     def __str__(self):
         return self.pg_category_id
