@@ -708,8 +708,10 @@ def problem_resolved(request):
                     "problem_level": problem_level, "member_information": pg_member_information,
                     "message": message
                 })
-            else:
+            elif todo == '2':
                 return HttpResponseRedirect('/index/problem_resolved')
+            elif todo == '3':
+                1
         return render(request, 'problem/resolved.html', {
             "all_problem": problem_list, "data": data,
             "member_information": pg_member_information, "pj_level": pj_level, "message": message

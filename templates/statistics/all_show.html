@@ -1,0 +1,438 @@
+{% extends 'base.html' %}
+{% block title %}项目问题总览{% endblock %}
+{% block content %}
+{% block css %}
+<style type="text/css">
+.myTable-container {
+	width: 800px;
+	height: 430px;
+}
+
+</style>
+
+{% endblock %}
+
+<div class="main-content">
+    <section class="section">
+        <h4 class="section-header">
+            <div>问题情况总览</div>
+        </h4>
+        <div class="section-body">
+            <div class="row">
+                <div class="col-12 col-md-4 col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>项目阶段·完成状态</h4>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="myChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>项目阶段·问题详情</h4>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="myChart2"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>项目问题解决情况</h4>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="myChart3"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <h4 class="section-header">
+        <form method="post" action="/statistics/" id="myform">
+        {%csrf_token%}
+        <input name="todo" value="2" type="hidden">
+        <select onchange="submitForm();" name="schedule_id">
+            {% for sc in all_schedule %}
+            <option value="{{sc.schedule_id}}"><h4>{{sc.schedule_name}}</h4></option>
+            {% endfor %}
+        </select>
+        </form>
+    </h4>
+    <div class="section-body">
+          <div class="row">
+            <div class="col-lg-6 col-md-12 col-12 col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>已解决问题</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>问题</th>
+                                    <th>创建人</th>
+                                    <th>负责人</th>
+                                    <th>级别</th>
+                                    <th>规定结束时间</th>
+                                    <th>最后处理时间</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for problem in resolved_problem%}
+                                <tr>
+                                    <td>{{problem.pp_title}}</td>
+
+                                    <td>
+                                    {% for member in member_information %}
+                                    {% if problem.pp_author == member.user_id %}
+                                        {{member.user_name}}
+                                    {% endif %}
+                                    {% endfor %}
+                                    </td>
+
+                                    <td>
+                                    {% for member in member_information %}
+                                    {% if problem.pp_to_user == member.user_id %}
+                                        {{member.user_name}}
+                                    {% endif %}
+                                    {% endfor %}
+                                    </td>
+
+                                    <td>
+                                    {% for pl in problem_level %}
+                                    {% if pl.pl_id == problem.pl_id %}
+                                        {{pl.pl_name}}
+                                    {% endif %}
+                                    {% endfor %}
+                                    </td>
+
+                                    <td>{{problem.pp_time}}</td>
+
+                                    <td>
+                                    {% for com in communication_information %}
+                                    {% if problem.pp_id == com.pp_id %}
+                                        {{com.pp_endtime}}
+                                    {% endif %}
+                                    {% endfor %}
+                                    </td>
+
+                                    {% if problem.pp_state == '已解决' %}
+                                    <td><div class="badge badge-success">{{problem.pp_state}}</div></td>
+                                    {% elif problem.pp_state == '进行中' %}
+                                    <td><div class="badge badge-warning">{{problem.pp_state}}</div></td>
+                                    {% else %}
+                                    <td><div class="badge badge-danger">{{problem.pp_state}}</div></td>
+                                    {% endif %}
+                                    <td>
+                                        <form method="post" action="/statistics/">
+                                        {%csrf_token%}
+                                        <input name="pp_id" value="{{problem.pp_id}}" type="hidden">
+                                        <button name="todo" value="1"  class="btn btn-primary btn-action mr-1"
+                                           data-target="tooltip" title="look"><i class="icon ion-search"></i></button>
+                                        <!-- 按钮触发模态框 -->
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <div class="float-right">
+                                {% if data1 %}
+                                <ul id="pages" class="pagination">
+                                    {% if data1.first %}
+                                    <li class="page-item"><a class="page-link" href="?page_mp=1">1</a></li>
+                                    {% endif %}
+                                    {% if data1.left %}
+                                    {% if data1.left_has_more %}
+                                    <li class="page-item"><span>...</span></li>
+                                    {% endif %}
+                                    {% for i in data1.left %}
+                                    <li class="page-item"><a class="page-link" href="?page_mp={{i}}">{{i}}</a></li>
+                                    {% endfor %}
+                                    {% endif %}
+                                    <li class="page-item active"><a class="page-link" href="?page_mp={{data1.page}}">{{data1.page}}</a></li>
+                                    {% if data1.right %}
+                                    {% for i in data1.right %}
+                                    <li class="page-item"><a class="page-link" href="?page_mp={{i}}">{{i}}</a></li>
+                                    {% endfor %}
+                                    {% if data1.right_has_more %}
+                                    <li class="page-item"><span>...</span></li>
+                                    {% endif %}
+                                    {% endif %}
+                                    {% if data1.last %}
+                                    <li class="page-item"><a class="page-link" href="?page_mp={{data1.total_pages}}">{{data1.total_pages}}</a></li>
+                                    {% endif %}
+                                </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12 col-12 col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>未解决问题</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>问题</th>
+                                    <th>创建人</th>
+                                    <th>负责人</th>
+                                    <th>级别</th>
+                                    <th>规定结束时间</th>
+                                    <th>最后处理时间</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for problem in unresolved_problem%}
+                                <tr>
+                                    <td>{{problem.pp_title}}</td>
+
+                                    <td>
+                                    {% for member in member_information %}
+                                    {% if problem.pp_author == member.user_id %}
+                                        {{member.user_name}}
+                                    {% endif %}
+                                    {% endfor %}
+                                    </td>
+
+                                    <td>
+                                    {% for member in member_information %}
+                                    {% if problem.pp_to_user == member.user_id %}
+                                        {{member.user_name}}
+                                    {% endif %}
+                                    {% endfor %}
+                                    </td>
+
+                                    <td>
+                                    {% for pl in problem_level %}
+                                    {% if pl.pl_id == problem.pl_id %}
+                                        {{pl.pl_name}}
+                                    {% endif %}
+                                    {% endfor %}
+                                    </td>
+
+                                    <td>{{problem.pp_time}}</td>
+
+                                    <td>
+                                    {% for com in communication_information %}
+                                    {% if problem.pp_id == com.pp_id %}
+                                        {{com.pp_endtime}}
+                                    {% endif %}
+                                    {% endfor %}
+                                    </td>
+
+                                    {% if problem.pp_state == '已解决' %}
+                                    <td><div class="badge badge-success">{{problem.pp_state}}</div></td>
+                                    {% elif problem.pp_state == '进行中' %}
+                                    <td><div class="badge badge-warning">{{problem.pp_state}}</div></td>
+                                    {% else %}
+                                    <td><div class="badge badge-danger">{{problem.pp_state}}</div></td>
+                                    {% endif %}
+                                    <td>
+                                        <form method="post" action="/statistics/">
+                                        {%csrf_token%}
+                                        <input name="pp_id" value="{{problem.pp_id}}" type="hidden">
+                                        <button name="todo" value="1"  class="btn btn-primary btn-action mr-1"
+                                           data-target="tooltip" title="look"><i class="icon ion-search"></i></button>
+                                        <!-- 按钮触发模态框 -->
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            <div class="float-right">
+                                {% if data2 %}
+                                <ul class="pagination">
+                                    {% if data2.first %}
+                                    <li class="page-item"><a class="page-link" href="?page_tmp=1">1</a></li>
+                                    {% endif %}
+                                    {% if data2.left %}
+                                    {% if data2.left_has_more %}
+                                    <li class="page-item"><span>...</span></li>
+                                    {% endif %}
+                                    {% for i in data2.left %}
+                                    <li class="page-item"><a class="page-link" href="?page_tmp={{i}}">{{i}}</a></li>
+                                    {% endfor %}
+                                    {% endif %}
+                                    <li class="page-item active"><a class="page-link" href="?page_tmp={{data2.page}}">{{data2.page}}</a></li>
+                                    {% if data2.right %}
+                                    {% for i in data2.right %}
+                                    <li class="page-item"><a class="page-link" href="?page_tmp={{i}}">{{i}}</a></li>
+                                    {% endfor %}
+                                    {% if data2.right_has_more %}
+                                    <li class="page-item"><span>...</span></li>
+                                    {% endif %}
+                                    {% endif %}
+                                    {% if data2.last %}
+                                    <li class="page-item"><a class="page-link" href="?page_tmp={{data2.total_pages}}">{{data2.total_pages}}</a></li>
+                                    {% endif %}
+                                </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </section>
+</div>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl/dist/echarts-gl.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat/dist/ecStat.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/dataTool.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/bmap.min.js"></script>
+
+<script>
+//表单提交
+function submitForm(){
+    var form = document.getElementById("myform");
+    form.submit();
+}
+
+
+
+    var jsondata = {{ jsondata|safe }}
+    var ctx = document.getElementById("myChart").getContext('2d');
+    var myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: jsondata.title,
+        datasets: [{
+          label: '完成',
+          data: jsondata.completion,
+          borderWidth: 2,
+          backgroundColor: 'rgb(40,167,69)',
+          borderColor: 'rgb(0,0,0)',
+          borderWidth: 2.5,
+          pointBackgroundColor: '#28a745',
+          pointRadius: 4
+        },
+        {
+          label: '未完成',
+          data: jsondata.uncompletion,
+<!--          borderWidth: 2,-->
+          backgroundColor: 'rgb(220,53,69)',
+          borderColor: 'rgb(0,0,0)',
+<!--          borderWidth: 2.5,-->
+          pointBackgroundColor: '#dc3545',
+<!--          pointRadius: 4-->
+        }]
+      },
+      options: {
+        legend: {
+<!--          display: false-->
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+              stepSize: 1
+            },
+          }],
+          xAxes: [{
+            gridLines: {
+              display: true
+            }
+          }]
+        },
+      }
+    });
+
+    var ctx = document.getElementById("myChart2").getContext('2d');
+    var myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: jsondata.title,
+        datasets: [{
+          label: '总量',
+          data: jsondata.all,
+          borderWidth: 2,
+          backgroundColor: 'rgb(105,105,105)',
+          borderColor: 'rgb(105,105,105)',
+          borderWidth: 2.5,
+          pointBackgroundColor: '#696969',
+          pointRadius: 4
+        },
+        {
+          label: '完成',
+          data: jsondata.resolved,
+          borderWidth: 2,
+          backgroundColor: 'rgb(40,167,69)',
+          borderColor: 'rgb(40,167,69)',
+          borderWidth: 2.5,
+          pointBackgroundColor: '#28a745',
+          pointRadius: 4
+        },
+        {
+          label: '未完成',
+          data: jsondata.unresolved,
+          borderWidth: 2,
+          backgroundColor: 'rgb(220,20,60)',
+          borderColor: 'rgb(220,20,60)',
+          borderWidth: 2.5,
+          pointBackgroundColor: '#DC143C',
+          pointRadius: 4
+        }]
+      },
+      options: {
+        legend: {
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+            }
+          }],
+          xAxes: [{
+            gridLines: {
+              display: false
+            }
+          }]
+        },
+      }
+    });
+
+    var ctx = document.getElementById("myChart3").getContext('2d');
+    var myChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: jsondata.pie_data,
+          backgroundColor: [
+            '#28a745',
+            '#dc3545',
+          ],
+          label: 'Dataset 1'
+        }],
+        labels: [
+          '完成',
+          '未完成',
+        ],
+      },
+      options: {
+        responsive: true,
+        legend: {
+          position: 'bottom',
+          display: false,
+        },
+      }
+    });
+</script>
+{% endblock %}
