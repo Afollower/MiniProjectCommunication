@@ -10,9 +10,6 @@
             <div class="col-lg-7 col-md-12 col-12 col-sm-12">
                 <div class="card">
                     <div class="card-header">
-                        <div class="float-right">
-                            <a href="/index/problem_solve/" class="btn btn-primary">View All</a>
-                        </div>
                         <h4>待处理问题</h4>
                     </div>
                     <div class="card-body">
@@ -22,6 +19,8 @@
                                 <tr>
                                     <th>问题</th>
                                     <th>创建人</th>
+                                    <th>规定结束时间</th>
+                                    <th>状态</th>
                                     <th>操作</th>
                                 </tr>
                                 </thead>
@@ -42,9 +41,26 @@
                                     <td>{{author.user_name}}</td>
                                     {% endif %}
                                     {% endfor %}
+
+                                    <td>{{problem.pp_time}}</td>
+
+                                    {% if problem.pp_state == '已解决' %}
+                                    <td><div class="badge badge-success">{{problem.pp_state}}</div></td>
+                                    {% elif problem.pp_state == '进行中' %}
+                                    <td><div class="badge badge-warning">{{problem.pp_state}}</div></td>
+                                    {% else %}
+                                    <td><div class="badge badge-danger">{{problem.pp_state}}</div></td>
+                                    {% endif %}
                                     <td>
-                                        <a class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
-                                           title="Edit"><i class="ion ion-edit"></i></a>
+                                        <form method="post" action="/index/problem_solve/">
+                                        {%csrf_token%}
+                                        <input name="pp_id" value="{{problem.pp_id}}" type="hidden">
+                                        <button name="todo" value="1"  class="btn btn-primary btn-action mr-1"
+                                           data-target="tooltip" title="look"><i class="icon ion-search"></i></button>
+                                        <button name="todo" value="2" class="btn btn-primary btn-action mr-1"
+                                           data-target="tooltip" title="Edit"><i class="ion ion-edit"></i></button>
+                                        <!-- 按钮触发模态框 -->
+                                        </form>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -87,9 +103,6 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="float-right">
-                            <a href="/index/my_problem/" class="btn btn-primary">View All</a>
-                        </div>
-                        <div class="float-right">
                             <a href="/index/problem_proposed/" class="btn btn-primary">add</a>
                         </div>
                         <h4>我的问题</h4>
@@ -100,6 +113,8 @@
                                 <thead>
                                 <tr>
                                     <th>问题</th>
+                                    <th>处理人</th>
+                                    <th>状态</th>
                                     <th>操作</th>
                                 </tr>
                                 </thead>
@@ -114,13 +129,28 @@
                                             {{problem.pp_state}}
                                         </div>
                                     </td>
+                                    {% for author in author_information %}
+                                    {% if problem.pp_author == author.user_id %}
+                                    <td>{{author.user_name}}</td>
+                                    {% endif %}
+                                    {% endfor %}
+
+                                    {% if problem.pp_state == '已解决' %}
+                                    <td><div class="badge badge-success">{{problem.pp_state}}</div></td>
+                                    {% elif problem.pp_state == '进行中' %}
+                                    <td><div class="badge badge-warning">{{problem.pp_state}}</div></td>
+                                    {% else %}
+                                    <td><div class="badge badge-danger">{{problem.pp_state}}</div></td>
+                                    {% endif %}
                                     <td>
-                                        <a class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
-                                           title="Edit"><i
-                                                class="ion ion-edit"></i></a>
-                                        <a class="btn btn-danger btn-action" data-toggle="tooltip"
-                                           title="Delete"><i
-                                                class="ion ion-trash-b"></i></a>
+                                        <form method="post" action="/index/my_problem/">
+                                        {%csrf_token%}
+                                        <input name="pp_id" value="{{problem.pp_id}}" type="hidden">
+                                        <button name="todo" value="2" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
+                                           title="Edit"><i class="ion ion-edit"></i></button>
+                                        <button name="todo" value="3" class="btn btn-danger btn-action" data-toggle="tooltip"
+                                           title="Delete"><i class="ion ion-trash-b"></i></button>
+                                        </form>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -164,9 +194,9 @@
             <div class="col-lg-12 col-md-12 col-12 col-sm-12">
                 <div class="card">
                     <div class="card-header">
-                        <div class="float-right">
-                            <a href="#" class="btn btn-primary">View All</a>
-                        </div>
+<!--                        <div class="float-right">-->
+<!--                            <a href="#" class="btn btn-primary">View All</a>-->
+<!--                        </div>-->
                         <h4>所有记录</h4>
                     </div>
                     <div class="card-body">
@@ -174,15 +204,29 @@
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
+                                    <th>项目阶段</th>
                                     <th>标题</th>
+                                    <th>创建时间</th>
+                                    <th>预计结束时间</th>
+                                    <th>最后处理时间</th>
+                                    <th>级别</th>
                                     <th>作者</th>
-                                    <th>指派给</th>
+                                    <th>负责人</th>
+                                    <th>状态</th>
                                     <th>操作</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {% for problem in all_problem %}
                                 <tr>
+
+                                    <td>
+                                    {% for sc in schedule %}
+                                    {% if problem.schedule_id == sc.schedule_id %}
+                                        {{sc.schedule_name}}
+                                    {% endif %}
+                                    {% endfor %}
+                                    </td>
                                     <td>
                                         {{problem.pp_title}}
                                         <div class="table-links">
@@ -191,6 +235,26 @@
                                             {{problem.pp_state}}
                                         </div>
                                     </td>
+                                    <td>{{problem.c_time}}</td>
+                                    <td>{{problem.pp_time}}</td>
+
+                                    <td>
+                                    {% for end in end_communication_information %}
+                                    {% if problem.pp_id == end.pp_id %}
+                                        {{end.pp_endtime}}
+                                    {% endif %}
+                                    {% endfor %}
+                                    </td>
+
+
+                                    <td>
+                                    {% for pl in problem_level %}
+                                    {% if problem.pl_id == pl.pl_id %}
+                                        {{pl.pl_name}}
+                                    {% endif %}
+                                    {% endfor %}
+                                    </td>
+
                                     {% for author in author_information %}
                                     {% if problem.pp_author == author.user_id %}
                                     <td>{{author.user_name}}</td>
@@ -199,11 +263,22 @@
                                     <td>{{author.user_name}}</td>
                                     {% endif %}
                                     {% endfor %}
+
+                                    {% if problem.pp_state == '已解决' %}
+                                    <td><div class="badge badge-success">{{problem.pp_state}}</div></td>
+                                    {% elif problem.pp_state == '进行中' %}
+                                    <td><div class="badge badge-warning">{{problem.pp_state}}</div></td>
+                                    {% else %}
+                                    <td><div class="badge badge-danger">{{problem.pp_state}}</div></td>
+                                    {% endif %}
+
                                     <td>
-                                        <a class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
-                                           title="Edit"><i class="ion ion-edit"></i></a>
-                                        <a class="btn btn-danger btn-action" data-toggle="tooltip"
-                                           title="Delete"><i class="ion ion-trash-b"></i></a>
+                                        <form method="post" action="/index/problem_resolved/">
+                                            {%csrf_token%}
+                                            <input name="pp_id" value="{{problem.pp_id}}" type="hidden">
+                                            <button name="todo" value="1" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
+                                                    title="Edit"><i class="icon ion-search"></i></button>
+                                        </form>
                                     </td>
                                 </tr>
                                 {% endfor %}

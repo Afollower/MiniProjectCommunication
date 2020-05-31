@@ -4,13 +4,14 @@ from project_admin.models import MPC_Level_pj_pd, MPC_Project_pd, MPC_Schedule_p
 from project_member_admin.models import MPC_Category_pg_pmd, MPC_Member_pg_pmd
 from user_admin.models import MPC_User_ud
 from .models import MPC_problem_sch, MPC_Problem_communication_sch
-from django.db.models import Max, Min
+from django.db.models import Max, Min, Count
 # 将查询到的数据转换为json
 import json
 from django.core import serializers
 # Django自带分页[数据分页]
 from django.core.paginator import Paginator
-
+# 获取时间
+from django.utils import timezone
 # Create your views here.
 
 
@@ -18,7 +19,71 @@ from django.core.paginator import Paginator
 def index(request):
     user_id = request.session.get('user_id', None)
     project_id = request.session.get('now_project_id', None)
+    # 获取当前时间/ 更新问题状态
+    all_problem = MPC_problem_sch.objects.filter(project_id=project_id)
+    now_time_y = timezone.now().year
+    now_time_m = timezone.now().month
+    now_time_d = timezone.now().day
+    for problem in all_problem:
+        if problem.pp_state == '进行中':
+            if int(now_time_y) < int(problem.pp_time[0:4]):
+                print("year same")
+            elif int(now_time_y) == int(problem.pp_time[0:4]):
+                if int(now_time_m) < int(problem.pp_time[5:7]):
+                    print("year/month same")
+                elif int(now_time_m) == int(problem.pp_time[5:7]):
+                    if int(now_time_d) <= int(problem.pp_time[8:10]):
+                        print("nochange")
+                    else:
+                        print("dtime out")
+                        test = 1
+                        problem.pp_state = '已超时'
+                        problem.save()
+                else:
+                    print("mtime out")
+                    test = 1
+                    problem.pp_state = '已超时'
+                    problem.save()
+            else:
+                print("ytime out")
+                test = 1
+                problem.pp_state = '已超时'
+                problem.save()
+        elif problem.pp_state == '已超时':
+            if int(now_time_y) < int(problem.pp_time[0:4]):
+                print("state change")
+                problem.pp_state = '进行中'
+                problem.save()
+            elif int(now_time_y) == int(problem.pp_time[0:4]):
+                if int(now_time_m) < int(problem.pp_time[5:7]):
+                    print("state change")
+                    problem.pp_state = '进行中'
+                    problem.save()
+                elif int(now_time_m) == int(problem.pp_time[5:7]):
+                    if int(now_time_d) <= int(problem.pp_time[8:10]):
+                        print("state change")
+                        problem.pp_state = '进行中'
+                        problem.save()
+
+    # 获取项目成员信息
+    pg_member = MPC_Member_pg_pmd.objects.filter(pg_id=project_id)
+    author = []
+    for i in pg_member:
+        author.append(i.user_id)
+    author_information = MPC_User_ud.objects.filter(user_id__in=author)
+    # 项目基础设定信息
+    schedule = MPC_Schedule_pd.objects.filter(project_id=project_id)
+    problem_level = MPC_Level_pj_pd.objects.filter(project_id=project_id)
+
+    # 所有问题
     my_problem = MPC_problem_sch.objects.filter(project_id=project_id, pp_author=user_id)
+    to_my_problem = MPC_problem_sch.objects.filter(project_id=project_id, pp_to_user=user_id).exclude(pp_state='已解决')
+    all_problem = MPC_problem_sch.objects.filter(project_id=project_id)
+
+    all_pp_com = MPC_Problem_communication_sch.objects.filter(project_id=project_id)
+    end_communication_information = all_pp_com.values('pp_id').annotate(pp_endtime=Max('ppc_time')).order_by()
+    print(end_communication_information)
+
     limit = 4
     # 数据分页
     my_problem_pages = Paginator(my_problem, limit)
@@ -73,8 +138,6 @@ def index(request):
             'total_pages': total_pages,
             'page': page
         }
-
-    to_my_problem = MPC_problem_sch.objects.filter(project_id=project_id, pp_to_user=user_id).exclude(pp_state='已解决')
     # 数据分页
     to_my_problem_pages = Paginator(to_my_problem, limit)
     if to_my_problem_pages.num_pages <= 1:
@@ -128,14 +191,6 @@ def index(request):
             'total_pages': total_pages,
             'page': page
         }
-    # 获取项目成员信息
-    pg_member = MPC_Member_pg_pmd.objects.filter(pg_id=project_id)
-    author = []
-    for i in pg_member:
-        author.append(i.user_id)
-    author_information = MPC_User_ud.objects.filter(user_id__in=author)
-    # 所有问题
-    all_problem = MPC_problem_sch.objects.filter(project_id=project_id)
     # 数据分页
     all_problem_pages = Paginator(all_problem, limit)
     if all_problem_pages.num_pages <= 1:
@@ -192,6 +247,8 @@ def index(request):
     return render(request, 'index/index.html', {
         "my_problem": problem_list1, "to_my_problem": problem_list2,
         "author_information": author_information, "all_problem": problem_list3,
+        "schedule": schedule, "problem_level": problem_level,
+        "end_communication_information": end_communication_information,
         'data1': data1, 'data2': data2, 'data3': data3
     })
 
@@ -237,13 +294,23 @@ def problem_proposed(request):
                 new_pp.pl_id = pl_id
                 new_pp.schedule_id = pp_schedule_id
                 new_pp.project_id = project_id
+
                 # 当前项目用户提交问题个数+1
                 change_member = MPC_Member_pg_pmd.objects.get(user_id=user_id, pg_id=project_id)
                 change_member.submit_sum += 1
+
+                # 添加第一条交流信息：提交问题，请尽快处理。
+                new_pp_communication = MPC_Problem_communication_sch.objects.create()
+                new_pp_communication.pp_com_id = '1'
+                new_pp_communication.pp_user_id = user_id
+                new_pp_communication.ppc_describe = '问题已提交，请尽快处理！'
+                new_pp_communication.pp_id = pp_id
+                new_pp_communication.project_id = project_id
                 # save放到最后
                 new_pp.save()
                 change_member.save()
-                return redirect('/index/')
+                new_pp_communication.save()
+                return HttpResponseRedirect('/index/')
             else:
                 message = '请检查填写是否完整。'
         else:
@@ -294,6 +361,7 @@ def my_problem_list(request):
                 # 当todo=2 只是查看，下面if直接跳过
                 # 当todo=1 说明存在修改
                 # 当todo=3 删除
+                print(todo)
                 if todo == '1':
                     pp_title = request.POST['pp_title']
                     pl_id = request.POST['pl_id']
@@ -301,7 +369,11 @@ def my_problem_list(request):
                     pp_state = request.POST['pp_state']
                     pp_to_user = request.POST['pp_to_user']
                     pp_time = request.POST['pp_time']
-
+                    print("test")
+                    schedule_id = request.POST['schedule_id']
+                    print(pp_information)
+                    print(show_pp_id)
+                    print(pp_time)
                     if pp_to_user == '':
                         pp_state = '待指派'
                     new_pp = MPC_problem_sch.objects.get(pp_id=show_pp_id, project_id=project_id)
@@ -310,27 +382,29 @@ def my_problem_list(request):
                     new_pp.pp_state = pp_state
                     new_pp.pp_time = pp_time
                     new_pp.pp_to_user = pp_to_user
+                    new_pp.schedule_id = schedule_id
                     new_pp.pl_id = pl_id
                     new_pp.save()
                     # 存储补充说明
                     ppc_describe = request.POST['ppc_describe']
-                    try:
-                        all_communication_hst = MPC_Problem_communication_sch.objects.filter(pp_id=show_pp_id,
-                                                                                             project_id=project_id)
-                        max_communication_hst = all_communication_hst.aggregate(Max('pp_com_id'))
-                        max_pp_com_id = str(max_communication_hst['pp_com_id__max'])
-                        new_pp_com_id = str(int(max_pp_com_id) + 1)
-                    except:
-                        new_pp_com_id = '1'
-                    new_pp_com = MPC_Problem_communication_sch.objects.create()
-                    new_pp_com.pp_com_id = new_pp_com_id
-                    new_pp_com.ppc_user_id = user_id
-                    new_pp_com.ppc_describe = ppc_describe
-                    new_pp_com.project_id = project_id
-                    new_pp_com.pp_id = show_pp_id
-                    new_pp_com.save()
+                    if ppc_describe != '':
+                        try:
+                            all_communication_hst = MPC_Problem_communication_sch.objects.filter(pp_id=show_pp_id,
+                                                                                                 project_id=project_id)
+                            max_communication_hst = all_communication_hst.aggregate(Max('pp_com_id'))
+                            max_pp_com_id = str(max_communication_hst['pp_com_id__max'])
+                            new_pp_com_id = str(int(max_pp_com_id) + 1)
+                        except:
+                            new_pp_com_id = '1'
+                        new_pp_com = MPC_Problem_communication_sch.objects.create()
+                        new_pp_com.pp_com_id = new_pp_com_id
+                        new_pp_com.ppc_user_id = user_id
+                        new_pp_com.ppc_describe = ppc_describe
+                        new_pp_com.project_id = project_id
+                        new_pp_com.pp_id = show_pp_id
+                        new_pp_com.save()
                     message = '修改成功！'
-
+                    return HttpResponseRedirect('/index/my_problem/')
                     all_problem = MPC_problem_sch.objects.filter(pp_author=user_id, project_id=project_id)
                 if todo == '3':
                     del_problem = MPC_problem_sch.objects.get(pp_id=show_pp_id, project_id=project_id)

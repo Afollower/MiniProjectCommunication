@@ -28,15 +28,7 @@
                                     <input name="pp_title" type="text" class="form-control"
                                            value="{{show_problem.pp_title}}" readonly="true">
                                 </div>
-                                <div class="form-group col-3">
-                                    <label>创建者</label>
-                                    {% for user in member_information %}
-                                    {% if user.user_id == show_problem.pp_author %}
-                                    <input name="pp_author" type="text" class="form-control"
-                                           value="{{user.user_name}}" readonly="true">
-                                    {% endif %}
-                                    {% endfor %}
-                                </div>
+
                                 <div class="form-group col-3">
                                     <label>阶段</label>
                                     {% for sc in all_schedule %}
@@ -66,16 +58,35 @@
                             </div>
 <!--                            开始结束时间-->
                             <div class="row">
-                                <div class="form-group col-4">
-                                    <div class="form-divider">开始时间</div>
+                                <div class="form-divider">操作信息</div>
+                                <div class="form-group col-6">
+                                    <label>创建者</label>
+                                    {% for user in member_information %}
+                                    {% if user.user_id == show_problem.pp_author %}
+                                    <input name="pp_author" type="text" class="form-control"
+                                           value="{{user.user_name}}" readonly="true">
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group col-6">
+                                    <label>创建时间</label>
                                     <input name="pp_time" type="text" class="form-control" value="{{show_problem.c_time}}" readonly>
                                 </div>
                                 <div class="form-group col-4">
-                                    <div class="form-divider">预计结束时间</div>
+                                    <label>处理者</label>
+                                    {% for user in member_information %}
+                                    {% if user.user_id == show_problem.pp_to_user %}
+                                    <input name="pp_author" type="text" class="form-control"
+                                           value="{{user.user_name}}" readonly="true">
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="form-group col-4">
+                                    <label>预计结束时间</label>
                                     <input name="pp_time" type="date" class="form-control" value="{{show_problem.pp_time}}" readonly>
                                 </div>
                                 <div class="form-group col-4">
-                                    <div class="form-divider">实际结束时间</div>
+                                    <label>实际结束时间</label>
                                     <input name="pp_end_time" type="text" class="form-control" value="{{end_information.ppc_time}}" readonly>
                                 </div>
                             </div>

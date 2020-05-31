@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.utils import timezone
 from django.db.models import Max
 from .models import MPC_Project_pd, MPC_Level_pj_pd, MPC_Schedule_pd
@@ -160,7 +160,7 @@ def project_information(request):
                                                             "project_problem_level": now_project_problem_level})
     except:
         message = '请先加入或选择项目组'
-        return render(request, 'user/index.html')
+        return HttpResponseRedirect('/index/')
 
 
 # 项目日程管理[未完成]
