@@ -3,8 +3,6 @@
 {% block content %}
 <div class="main-content">
     <section class="section">
-        <form method="POST" action="/project_member/admin/">
-            {%csrf_token%}
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-12 col-sm-12">
                     <div class="card">
@@ -19,6 +17,7 @@
                                         <th>用户ID</th>
                                         <th>姓名</th>
                                         <th>单位</th>
+                                        <th>职位</th>
                                         <th>当前分组</th>
                                         <th></th>
                                     </tr>
@@ -29,6 +28,10 @@
                                     <td>{{member.user_id}}</td>
                                     <td>{{member.user_name}}</td>
                                     <td>{{member.user_company}}</td>
+                                    <td>{{member.user_position}}</td>
+
+                                    <form method="POST" action="/project_member/admin/">
+                                        {%csrf_token%}
                                     <td>
                                         <select name="pg_category" >
                                         {% for mem in members %}
@@ -51,6 +54,7 @@
                                         <button name="todo" value="2" class="btn btn-danger btn-action" data-toggle="tooltip"
                                            title="del"><i class="ion ion-trash-b"></i></button>
                                     </td>
+                                    </form>
                                     </tr>
                                     {% endfor %}
                                     </tbody>
@@ -60,7 +64,6 @@
                     </div>
                 </div>
             </div>
-        </form>
     </section>
 </div>
 

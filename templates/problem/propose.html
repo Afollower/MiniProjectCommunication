@@ -59,7 +59,9 @@
                                 <label>指派给</label>
                                 <select name="pp_to_user" class="form-control">
                                     {% for user in pg_member %}
+                                    {% if user.user_id != request.session.user_id %}
                                     <option value="{{user.user_id}}">{{user.user_name}}</option>
+                                    {% endif %}
                                     {% endfor %}
                                 </select>
                             </div>
@@ -92,10 +94,42 @@
                                     <td>{{member.user_name}}<br>
                                         <b>{{member.user_profile}}</b>
                                     </td>
+                                    <td>{{member.user_company}}<br>
+                                        <b>{{member.user_position}}</b>
+                                    </td>
                                 </tr>
                                 {% endfor %}
                                 </tbody>
                             </table>
+                            <div class="float-right">
+                                {% if data1 %}
+                                <ul id="pages" class="pagination">
+                                    {% if data1.first %}
+                                    <li class="page-item"><a class="page-link" href="?page_mp=1">1</a></li>
+                                    {% endif %}
+                                    {% if data1.left %}
+                                    {% if data1.left_has_more %}
+                                    <li class="page-item"><span>...</span></li>
+                                    {% endif %}
+                                    {% for i in data1.left %}
+                                    <li class="page-item"><a class="page-link" href="?page_mp={{i}}">{{i}}</a></li>
+                                    {% endfor %}
+                                    {% endif %}
+                                    <li class="page-item active"><a class="page-link" href="?page_mp={{data1.page}}">{{data1.page}}</a></li>
+                                    {% if data1.right %}
+                                    {% for i in data1.right %}
+                                    <li class="page-item"><a class="page-link" href="?page_mp={{i}}">{{i}}</a></li>
+                                    {% endfor %}
+                                    {% if data1.right_has_more %}
+                                    <li class="page-item"><span>...</span></li>
+                                    {% endif %}
+                                    {% endif %}
+                                    {% if data1.last %}
+                                    <li class="page-item"><a class="page-link" href="?page_mp={{data1.total_pages}}">{{data1.total_pages}}</a></li>
+                                    {% endif %}
+                                </ul>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>

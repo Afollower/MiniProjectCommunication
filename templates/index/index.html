@@ -1,13 +1,41 @@
 {% extends 'base.html' %}
 {% block title %}主页{% endblock %}
+
+{% block news %}
+<li class="dropdown dropdown-list-toggle">
+    <a href="#" data-toggle="dropdown" class="nav-link notification-toggle nav-link-lg beep">
+        <i class="ion ion-ios-bell-outline"></i></a>
+        <div class="dropdown-menu dropdown-list dropdown-menu-right">
+            <div class="dropdown-header">最新
+            </div>
+
+            <div class="dropdown-list-content">
+                {% for com_message in end_com_information %}
+                <a href="#" class="dropdown-item dropdown-item-unread">
+                    问题ID：{{com_message.pp_id}}
+
+                    <div class="form-group">
+                        {% for creator in author_information %}
+                        {% if creator.user_id == com_message.ppc_user_id %}
+                        <p>[{{com_message.ppc_time}}]{{creator.user_name}} :{{com_message.ppc_describe}}</p>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+</li>
+
+{% endblock %}
 {% block content %}
 <div class="main-content">
-    {% if message != '' %}
-    <div class="alert alert-dark alert-dismissible">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        {{message}}
-    </div>
-    {% endif %}
+{% if message != '' %}
+<div class="alert alert-dark alert-dismissible">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    {{message}}
+</div>
+{% endif %}
     <section class="section">
         <div class="row">
             <div class="col-lg-7 col-md-12 col-12 col-sm-12">

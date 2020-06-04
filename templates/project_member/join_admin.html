@@ -3,8 +3,6 @@
 {% block content %}
 <div class="main-content">
     <section class="section">
-        <form method="POST" action="/project_member/join_admin/">
-            {%csrf_token%}
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-12 col-sm-12">
                     <div class="card">
@@ -19,6 +17,7 @@
                                         <th>用户ID</th>
                                         <th>姓名</th>
                                         <th>单位</th>
+                                        <th>职位</th>
                                         <th>分组</th>
                                         <th></th>
                                     </tr>
@@ -27,12 +26,16 @@
                                     {% for member in members %}
                                     <tr>
                                     <td>{{member.user_id}}</td>
-                                    {% for mem_information in member_information %}
-                                    {% if mem_information.user_id == member.user_id %}
-                                    <td>{{mem_information.user_name}}</td>
-                                    <td>{{mem_information.user_company}}</td>
-                                    {% endif %}
-                                    {% endfor %}
+                                        {% for mem_information in member_information %}
+                                        {% if mem_information.user_id == member.user_id %}
+                                        <td>{{mem_information.user_name}}</td>
+                                        <td>{{mem_information.user_company}}</td>
+                                        <td>{{mem_information.user_position}}</td>
+                                        {% endif %}
+                                        {% endfor %}
+
+                                    <form method="POST" action="/project_member/join_admin/">
+                                        {%csrf_token%}
                                     <td>
                                         <select name="pg_category" >
                                         {% for pgc in pg_category %}
@@ -45,12 +48,13 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input name="member_id" value="{{member.user_id}}" type="hidden">
+                                        <input name="add_member_id" value="{{member.user_id}}" type="hidden">
                                         <button name="todo" value="1" class="btn btn-primary btn-action mr-1" data-toggle="tooltip"
                                                title="Pass"><i class="icon ion-checkmark"></i></button>
                                         <button name="todo" value="2" class="btn btn-danger btn-action" data-toggle="tooltip"
                                            title="Refuse"><i class="ion ion-trash-b"></i></button>
                                     </td>
+                                    </form>
                                     </tr>
                                     {% endfor %}
                                     </tbody>
@@ -60,7 +64,6 @@
                     </div>
                 </div>
             </div>
-        </form>
     </section>
 </div>
 

@@ -15,10 +15,15 @@ from django.core.paginator import Paginator
 def all_problem_statistics_show(request):
     project_id = request.session.get('now_project_id', None)
     user_id = request.session.get('user_id', None)
-
+    if project_id == '':
+        message = '请先加入项目！'
+        return render(request, 'index/index.html', {"message": message})
     schedule = MPC_Schedule_pd.objects.filter(project_id=project_id)
-
-    all_problem = MPC_problem_sch.objects.filter(project_id=project_id)
+    try:
+        all_problem = MPC_problem_sch.objects.filter(project_id=project_id)
+    except:
+        message = '当前项目无问题提交，无统计信息'
+        return render(request, 'index/index.html', {"message": message})
     resolved_problem = MPC_problem_sch.objects.filter(project_id=project_id, pp_state='已解决')
     unresolved_problem = MPC_problem_sch.objects.filter(project_id=project_id).exclude(pp_state='已解决')
     schedule_all_problem = all_problem.values('schedule_id').annotate(pp_sum=Count('schedule_id')).order_by()
@@ -51,12 +56,11 @@ def all_problem_statistics_show(request):
         for un in schedule_unresolved_problem:
             if title_id[i] == un['schedule_id']:
                 unresolved_problem[i] = int(un['pp_sum'])
-                uncompletion[i] = 1
     for i in range(int(max_scid)):
         for al in schedule_all_problem:
             if title_id[i] == al['schedule_id']:
                 all_problem[i] = int(al['pp_sum'])
-
+                uncompletion[i] = 1
     for i in range(int(max_scid)):
         for re in schedule_resolved_problem:
             if title_id[i] == re['schedule_id']:
@@ -65,8 +69,8 @@ def all_problem_statistics_show(request):
                         if re['pp_sum'] != 0:
                             completion[i] = round(re['pp_sum'] / al['pp_sum'], 2)
     # 折线图数据round(a/b,2)
-    for i in range(int(max_scid)):
-        uncompletion[i] = 1
+    # for i in range(int(max_scid)):
+    #     uncompletion[i] = 1
     print(completion)
     # 饼图数据
     pie_data = [0, 0]
@@ -99,15 +103,16 @@ def all_problem_statistics_show(request):
     for i in schedule_all_problem:
         if i['pp_sum'] > 0:
             schedule_has_problem.append(i['schedule_id'])
-    show_schedule_id = schedule_has_problem[0]
+    show_schedule_id = request.session.get('show_schedule', None)
+    print(show_schedule_id)
     if request.method == 'POST':
         todo = request.POST['todo']
-        print(todo)
         if todo == '2':
             show_schedule_id = request.POST['schedule_id']
-            print(show_schedule_id)
+            request.session['show_schedule'] = show_schedule_id
             if show_schedule_id not in schedule_has_problem:
                 show_schedule_id = schedule_has_problem[0]
+                request.session['show_schedule'] = show_schedule_id
         elif todo == '1':
             show_pp_id = request.POST['pp_id']
             show_problem = MPC_problem_sch.objects.get(pp_id=show_pp_id, project_id=project_id)
@@ -119,10 +124,8 @@ def all_problem_statistics_show(request):
                 "problem_level": problem_level, "member_information": member_information
             })
         else:
+            print("TEST")
             return HttpResponseRedirect('/statistics/')
-
-
-
     show_schedule_resolved_problem = MPC_problem_sch.objects.filter(
         project_id=project_id, schedule_id=show_schedule_id, pp_state='已解决')
     show_schedule_unresolved_problem = MPC_problem_sch.objects.filter(
@@ -238,9 +241,9 @@ def all_problem_statistics_show(request):
         }
 
     return render(request, 'statistics/all_show.html', {
-        "resolved_problem": show_schedule_resolved_problem, "unresolved_problem": show_schedule_unresolved_problem,
+        "resolved_problem": problem_list1, "data1": data1, "unresolved_problem": problem_list2, "data2": data2,
         "member_information": member_information, "problem_level": problem_level,
         "communication_information": end_communication_information,
-        "all_schedule": all_schedule, "data1": data1, "show_schedule": show_schedule, "data2": data2,
+        "all_schedule": all_schedule, "show_schedule": show_schedule,
         "jsondata": json.dumps(jsondata)
     })

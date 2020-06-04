@@ -37,6 +37,7 @@ def login(request):
                         user_state = MPC_User_state_ud.objects.get(user_id=user.user_id)
                         request.session['now_project_id'] = user_state.project_id
                         request.session['now_project_uc_id'] = user_state.pg_category_id
+                        request.session['show_schedule'] = '1'
                         try:
                             pj = MPC_Project_pd.objects.get(project_id=user_state.project_id)
                             request.session['now_project_name'] = pj.project_name
@@ -85,6 +86,7 @@ def login_email(request):
                         user_state = MPC_User_state_ud.objects.get(user_id=user.user_id)
                         request.session['now_project_id'] = user_state.project_id
                         request.session['now_project_uc_id'] = user_state.pg_category_id
+                        request.session['show_schedule'] = '1'
                         try:
                             pj = MPC_Project_pd.objects.get(project_id=user_state.project_id)
                             request.session['now_project_name'] = pj.project_name
@@ -185,6 +187,7 @@ def register(request):
 
 # 个人信息
 def show_information(request):
+    message = ''
     user_id = request.session.get('user_id', None)
     if request.method == "POST":
         user_email = request.POST['user_email']
@@ -201,14 +204,14 @@ def show_information(request):
         user.user_position = user_position
         user.user_profile = user_profile
         user.save()
-        message = '修改成功！'
-        return render(request, 'index/index.html', locals())
+        message = '修改成功'
     now_user = MPC_User_ud.objects.get(user_id=user_id)
-    return render(request, 'user/information.html', {"user": now_user})
+    return render(request, 'user/information.html', {"user": now_user, "message": message})
 
 
 # 修改密码
 def change_password(request):
+    message = ''
     if request.method == "POST":
         old_password = request.POST['old_password']
         password1 = request.POST['password1']
@@ -220,10 +223,9 @@ def change_password(request):
                 user.password = password1
                 user.save()
                 message = '密码修改成功！'
-                return redirect('/index/')
             else:
-                message = '请确认新密码是否输入出错！'
+                message = '两次密码不正确'
         else:
             message = '请输入正确的旧密码！'
-            return render(request, 'user/change_password.html', locals())
+            return render(request, 'user/change_password.html', {"message": message})
     return render(request, 'user/change_password.html')

@@ -18,6 +18,7 @@ from django.urls import path, include
 from user_admin import views
 
 urlpatterns = [
+    path('admin/', admin.site.urls),  # 管理员端
     # 自定义app次级路由
     path('user/', include('user_admin.urls')),
     path('index/', include('system_communication_home.urls')),

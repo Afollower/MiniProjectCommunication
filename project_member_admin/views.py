@@ -14,6 +14,18 @@ def member_admin(request):
         project_id = request.session.get('now_project_id', None)
         # 已经加入的用户
         in_pg_category = ['1', '2', '3', '4']
+        if request.method == "POST":
+            todo = request.POST['todo']
+            member_id = request.POST['member_id']
+            if todo == '1':
+                member_pgc = request.POST['pg_category']
+                change_member = MPC_Member_pg_pmd.objects.get(user_id=member_id, pg_id=project_id)
+                change_member.pg_category_id = member_pgc
+                change_member.save()
+            else:
+                change_member = MPC_Member_pg_pmd.objects.get(user_id=member_id)
+                change_member.pg_category_id = '10'
+                change_member.save()
         members = MPC_Member_pg_pmd.objects.filter(pg_id=project_id, pg_category_id__in=in_pg_category)
         # 获取用户信息
         user_ids = []
@@ -22,24 +34,12 @@ def member_admin(request):
         member_information = MPC_User_ud.objects.filter(user_id__in=user_ids)
         # 获取项目信息
         pg_category = MPC_Category_pg_pmd.objects.filter(pg_id=project_id)
-        if request.method == "POST":
-            todo = request.POST['todo']
-            member_id = request.POST['member_id']
-            if todo == '1':
-                member_pgc = request.POST['pg_category']
-                change_member = MPC_Member_pg_pmd.objects.get(user_id=member_id)
-                change_member.pg_category_id = member_pgc
-                change_member.save()
-            else:
-                change_member = MPC_Member_pg_pmd.objects.get(user_id=member_id)
-                change_member.pg_category_id = '10'
-                change_member.save()
         return render(request, 'project_member/admin.html', {
                 "members": members, "member_information": member_information, "pg_category": pg_category
         })
     else:
         message = '您的权限不足！'
-        return render(request, 'index/index.html', locals())
+        return render(request, 'index/index.html', {"message": message})
 
 
 # 成员申请管理
@@ -50,16 +50,15 @@ def join_admin(request):
     if user_category == '1':
         pg_category = MPC_Category_pg_pmd.objects.filter(pg_id=project_id)
         # 获取申请名单
-        member = MPC_Member_pg_pmd.objects.filter(pg_id=project_id, pg_category_id=0)
+        member = MPC_Member_pg_pmd.objects.filter(pg_id=project_id, pg_category_id='0')
         # 获取申请人员信息
         members = []
         for i in member:
             members.append(i.user_id)
-            print(i.user_id)
         member_information = MPC_User_ud.objects.filter(user_id__in=members)
         if request.method == "POST":
             todo = request.POST['todo']
-            member_id = request.POST['member_id']
+            member_id = request.POST['add_member_id']
             user_pgc = request.POST['pg_category']
             if todo == '1':
                 change_member = MPC_Member_pg_pmd.objects.get(user_id=member_id, pg_id=project_id)

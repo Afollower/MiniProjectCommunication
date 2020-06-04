@@ -57,7 +57,11 @@
         <input name="todo" value="2" type="hidden">
         <select onchange="submitForm();" name="schedule_id">
             {% for sc in all_schedule %}
+            {% if show_schedule.schedule_id == sc.schedule_id %}
+            <option value="{{sc.schedule_id}}" selected><h4>{{sc.schedule_name}}</h4></option>
+            {% else %}
             <option value="{{sc.schedule_id}}"><h4>{{sc.schedule_name}}</h4></option>
+            {% endif %}
             {% endfor %}
         </select>
         </form>
@@ -325,7 +329,7 @@ function submitForm(){
           pointRadius: 4
         },
         {
-          label: '未完成',
+          label: '待处理',
           data: jsondata.uncompletion,
 <!--          borderWidth: 2,-->
           backgroundColor: 'rgb(220,53,69)',
@@ -429,8 +433,8 @@ function submitForm(){
       options: {
         responsive: true,
         legend: {
-          position: 'bottom',
-          display: false,
+<!--          position: 'bottom',-->
+<!--          display: false,-->
         },
       }
     });

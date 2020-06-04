@@ -1,50 +1,28 @@
 {% extends 'base.html' %}
-{% block title %}日程设定{% endblock %}
+{% block title %}项目日程{% endblock %}
 {% block content %}
-<div class="modal modal-default fade" id="modal-class">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">导入日程文件</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span></button>
-            </div>
-            <div class="modal-body">
-                <form method="post" action="/project/schedule/" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <br>请上传文件<input type="file" name="files"><br>
-                    <input type="submit" value="上传">
-                    <br>
-                    <b><small>文件上传执行结果：</small></b><hr>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 <div class="main-content">
     <section class="section">
-        <form method="post" action="/project/schedule/">
-        {% csrf_token %}
         <div class="row">
             <div class="col-lg-12 col-md-12 col-12 col-sm-12">
                 <div class="card">
                     <div class="card-header">
-                        <div class="float-right">
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-class">import</i>
-                            </button>
-                        </div>
+<!--                        <div class="float-right">-->
+<!--                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-class">import</i>-->
+<!--                            </button>-->
+<!--                        </div>-->
                         <h4>日程设定</h4>
                     </div>
                     <div class="card-body">
                         <div class="form-divider">
-                            <div class="float-right">
-                                <span onclick="javascript:del_schedule_Node('schedule_sum','add_schedule')"
-                                      class="btn btn-primary btn-sm">del</span>
-                                <span onclick="javascript:add_schedule_Node('schedule_sum','add_schedule')"
-                                      class="btn btn-primary btn-sm">add</span>
-                                <input name="schedule_sum" id="schedule_sum"
-                                value="2" style="display:none">
-                            </div>
+<!--                            <div class="float-right">-->
+<!--                                <span onclick="javascript:del_schedule_Node('schedule_sum','add_schedule')"-->
+<!--                                      class="btn btn-primary btn-sm">del</span>-->
+<!--                                <span onclick="javascript:add_schedule_Node('schedule_sum','add_schedule')"-->
+<!--                                      class="btn btn-primary btn-sm">add</span>-->
+<!--                                <input name="schedule_sum" id="schedule_sum"-->
+<!--                                value="2" style="display:none">-->
+<!--                            </div>-->
                             日程设定
                         </div>
                         <div class="row" id="add_schedule">
@@ -75,16 +53,18 @@
                              </div>
                             {% endfor %}
                         </div>
-                        <div class="form-group">
-                        <button name="todo" value="1" type="submit" class="btn btn-primary btn-block">
-                            确认
-                        </button>
-                    </div>
+                        <form method="post" action="/project/schedule/">
+                        {% csrf_token %}
+                            <div class="form-group">
+                            <button name="todo" value="2" class="btn btn-primary btn-block">
+                                确认
+                            </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-        </form>
     </section>
 </div>
 

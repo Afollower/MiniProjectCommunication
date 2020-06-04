@@ -125,7 +125,7 @@ def project_create(request):
                 request.session['now_project_id'] = pj_id
                 request.session['now_project_name'] = project_name
                 request.session['now_project_uc_id'] = '1'  # '1'管理员等级
-                return redirect('/index/')
+                return HttpResponseRedirect('/project/schedule/')
             else:
                 message = '请确认项目邀请码'
         else:
@@ -167,8 +167,8 @@ def project_information(request):
 def set_project_schedule(request):
     project_id = request.session.get('now_project_id', None)
     user_category = int(request.session.get('now_project_uc_id', None))
+    all_schedule = MPC_Schedule_pd.objects.filter(project_id=project_id)
     if user_category == 1:
-        all_schedule = MPC_Schedule_pd.objects.filter(project_id=project_id)
         if request.method == "POST":
             schedule_sum = int(request.POST['schedule_sum'])
             print(schedule_sum)
@@ -196,11 +196,14 @@ def set_project_schedule(request):
             "all_schedule": all_schedule
         })
     elif user_category > 1 or user_category <= 4:
-        message = '您的权限不足！'
-        return render(request, 'index/index.htm', locals())
+        if request.method == "POST":
+            return HttpResponseRedirect('/index/')
+        return render(request, 'project/schedule_show.html', {
+            "all_schedule": all_schedule
+        })
     else:
-        message = '请先创建项目！'
-        return render(request, 'index/index.htm', locals())
+        message = '请先创建或加入项目！'
+        return render(request, 'index/index.html', locals())
 
 
 # 设置项目问题等级
@@ -414,6 +417,10 @@ def project_for_me(request):
             request.session['now_project_id'] = project_id
             request.session['now_project_name'] = project.project_name
             request.session['now_project_uc_id'] = pg_information.pg_category_id
+            user_state = MPC_User_state_ud.objects.get(user_id=user_id)
+            user_state.project_id = project_id
+            user_state.pg_category_id = pg_information.pg_category_id
+            user_state.save()
             return redirect('/project/my/')
         else:
             # 退出项目
